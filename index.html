@@ -193,7 +193,7 @@
             </div>
             
             <div class="login-form">
-                <h3>Seller Login</h3>
+                <h3>Seller Access</h3>
                 <form id="loginForm">
                     <div class="form-group">
                         <label for="email">Email Address</label>
@@ -205,8 +205,13 @@
                         <input type="password" id="password" name="password" required>
                     </div>
                     
-                    <button type="submit" class="btn">Access Dashboard</button>
+                    <button type="submit" class="btn">Sign In</button>
                 </form>
+                
+                <div style="text-align: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e9ecef;">
+                    <p style="color: #666; margin-bottom: 1rem;">New to SellersMedia?</p>
+                    <a href="signup.html" class="btn" style="display: inline-block; text-decoration: none; background: #6c757d;">Create Account</a>
+                </div>
             </div>
         </div>
     </div>
@@ -240,28 +245,15 @@
             submitBtn.disabled = true;
             
             try {
-                // Try to sign in first
-                let result = await auth.signIn(email, password);
+                // Sign in user
+                const result = await auth.signIn(email, password);
                 
-                // If sign in fails, try to sign up (for new users)
-                if (result.error && result.error.message.includes('Invalid login credentials')) {
-                    utils.showNotification('User not found. Creating new account...', 'info');
-                    result = await auth.signUp(email, password);
-                    
-                    if (result.error) {
+                if (result.error) {
+                    if (result.error.message.includes('Invalid login credentials')) {
+                        throw new Error('Invalid email or password. Please check your credentials or create an account.');
+                    } else {
                         throw result.error;
                     }
-                    
-                    if (result.user) {
-                        utils.showNotification('Account created! Please check your email to verify your account.', 'success');
-                        // For demo purposes, we'll still redirect
-                        setTimeout(() => {
-                            window.location.href = 'dashboard.html';
-                        }, 2000);
-                        return;
-                    }
-                } else if (result.error) {
-                    throw result.error;
                 }
                 
                 if (result.user) {
@@ -276,7 +268,7 @@
                 utils.showNotification(error.message || 'Login failed. Please try again.', 'error');
             } finally {
                 // Reset button state
-                submitBtn.textContent = 'Access Dashboard';
+                submitBtn.textContent = 'Sign In';
                 submitBtn.disabled = false;
             }
         });
