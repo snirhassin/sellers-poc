@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - SellersMedia</title>
+    
+    <!-- Supabase Client -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 300;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logout-btn {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: white;
+            color: #2c3e50;
+        }
+        
+        .nav {
+            background: white;
+            padding: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .nav-list {
+            list-style: none;
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .nav-item {
+            flex: 1;
+        }
+        
+        .nav-link {
+            display: block;
+            padding: 1.2rem 2rem;
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: #2c3e50;
+            background: #f8f9fa;
+            border-bottom-color: #667eea;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .welcome {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .welcome h2 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+            display: block;
+        }
+        
+        .stat-label {
+            color: #666;
+            margin-top: 0.5rem;
+        }
+        
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .action-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .action-card h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+        
+        .action-card p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: transform 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .nav-list {
+                flex-direction: column;
+            }
+            
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>SellersMedia Dashboard</h1>
+        <div class="user-info">
+            <span id="userEmail"></span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+    
+    <nav class="nav">
+        <ul class="nav-list">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link active">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a href="asins.html" class="nav-link">ASIN Management</a>
+            </li>
+            <li class="nav-item">
+                <a href="reports.html" class="nav-link">Monthly Reports</a>
+            </li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <div class="welcome">
+            <h2>Welcome to Your Seller Dashboard</h2>
+            <p>Manage your Amazon products and track their performance across our review and comparison network.</p>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <span class="stat-number" id="totalAsins">0</span>
+                <div class="stat-label">Total ASINs</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="avgRate">0%</span>
+                <div class="stat-label">Average Rate</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="lastMonth">$0</span>
+                <div class="stat-label">Last Month Performance</div>
+            </div>
+        </div>
+        
+        <div class="quick-actions">
+            <div class="action-card">
+                <h3>Manage Your ASINs</h3>
+                <p>Upload, edit, and manage your Amazon product ASINs with custom rates for each market.</p>
+                <a href="asins.html" class="btn">Go to ASIN Management</a>
+            </div>
+            
+            <div class="action-card">
+                <h3>View Monthly Report</h3>
+                <p>See detailed performance metrics for your products from last month's campaign results.</p>
+                <a href="reports.html" class="btn">View Last Month Report</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+
+        // Check authentication and load data
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Wait for Supabase to load
+            setTimeout(async () => {
+                await checkAuthAndLoadData();
+            }, 100);
+        });
+
+        async function checkAuthAndLoadData() {
+            try {
+                // Check if user is logged in
+                const isLoggedIn = await auth.isLoggedIn();
+                if (!isLoggedIn) {
+                    window.location.href = 'index.html';
+                    return;
+                }
+                
+                // Get current user
+                currentUser = await auth.getCurrentUser();
+                if (currentUser) {
+                    document.getElementById('userEmail').textContent = currentUser.email;
+                }
+                
+                // Load ASIN statistics from database
+                await loadDashboardStats();
+                
+            } catch (error) {
+                console.error('Dashboard initialization error:', error);
+                utils.showNotification('Error loading dashboard', 'error');
+            }
+        }
+
+        async function loadDashboardStats() {
+            try {
+                const { data: asins, error } = await database.getAsins();
+                
+                if (error) {
+                    console.error('Error loading ASINs:', error);
+                    return;
+                }
+                
+                // Update total ASINs
+                document.getElementById('totalAsins').textContent = asins ? asins.length : 0;
+                
+                if (asins && asins.length > 0) {
+                    // Calculate average rate
+                    const avgRate = asins.reduce((sum, asin) => sum + parseFloat(asin.rate || 0), 0) / asins.length;
+                    document.getElementById('avgRate').textContent = avgRate.toFixed(1) + '%';
+                    
+                    // Mock last month performance based on ASINs
+                    const mockPerformance = asins.length * 125.50;
+                    document.getElementById('lastMonth').textContent = '$' + mockPerformance.toFixed(0);
+                } else {
+                    document.getElementById('avgRate').textContent = '0%';
+                    document.getElementById('lastMonth').textContent = '$0';
+                }
+                
+            } catch (error) {
+                console.error('Error loading dashboard stats:', error);
+                utils.showNotification('Error loading statistics', 'error');
+            }
+        }
+        
+        async function logout() {
+            try {
+                await auth.signOut();
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Logout error:', error);
+                // Fallback: redirect anyway
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
+</body>
+</html>

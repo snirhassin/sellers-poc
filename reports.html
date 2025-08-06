@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Reports - SellersMedia</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 300;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logout-btn {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: white;
+            color: #2c3e50;
+        }
+        
+        .nav {
+            background: white;
+            padding: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .nav-list {
+            list-style: none;
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .nav-item {
+            flex: 1;
+        }
+        
+        .nav-link {
+            display: block;
+            padding: 1.2rem 2rem;
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: #2c3e50;
+            background: #f8f9fa;
+            border-bottom-color: #667eea;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .report-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .report-date {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .summary-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .summary-card.highlight {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .summary-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .summary-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .report-section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+        
+        .section-header {
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .section-header h3 {
+            color: #2c3e50;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table th,
+        .table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .performance-bar {
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .performance-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        
+        .performance-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-low {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-high {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .chart-placeholder {
+            height: 200px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            margin: 1.5rem;
+        }
+        
+        .download-btn {
+            background: #6c757d;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .download-btn:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .table {
+                font-size: 0.9rem;
+            }
+            
+            .table th,
+            .table td {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Monthly Reports</h1>
+        <div class="user-info">
+            <span id="userEmail"></span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+    
+    <nav class="nav">
+        <ul class="nav-list">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a href="asins.html" class="nav-link">ASIN Management</a>
+            </li>
+            <li class="nav-item">
+                <a href="reports.html" class="nav-link active">Monthly Reports</a>
+            </li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <div class="report-header">
+            <div class="report-date" id="reportDate"></div>
+            <h2>Performance Report</h2>
+            <button class="download-btn" onclick="downloadReport()">📊 Download Report</button>
+        </div>
+        
+        <div id="reportContent">
+            <div class="empty-state">
+                <h4>No ASINs found</h4>
+                <p>Please upload ASINs in the ASIN Management section to view reports</p>
+                <a href="asins.html" style="color: #667eea; text-decoration: none;">→ Go to ASIN Management</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check if user is logged in
+        if (!localStorage.getItem('sellerLoggedIn')) {
+            window.location.href = 'index.html';
+        }
+        
+        // Display user email
+        document.getElementById('userEmail').textContent = localStorage.getItem('sellerEmail') || 'Seller';
+        
+        // Set report date (last month)
+        const lastMonth = new Date();
+        lastMonth.setMonth(lastMonth.getMonth() - 1);
+        const monthNames = ["January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"];
+        document.getElementById('reportDate').textContent = 
+            `${monthNames[lastMonth.getMonth()]} ${lastMonth.getFullYear()} Report`;
+        
+        // Load ASINs and generate report
+        const asins = JSON.parse(localStorage.getItem('sellerAsins') || '[]');
+        
+        if (asins.length > 0) {
+            generateReport(asins);
+        }
+        
+        function generateReport(asins) {
+            // Generate mock performance data
+            const reportData = asins.map(asin => {
+                const baseRevenue = Math.random() * 500 + 50;
+                const clicks = Math.floor(Math.random() * 1000) + 100;
+                const conversions = Math.floor(clicks * (Math.random() * 0.1 + 0.02));
+                
+                return {
+                    ...asin,
+                    revenue: baseRevenue * (asin.rate / 100),
+                    clicks: clicks,
+                    conversions: conversions,
+                    conversionRate: conversions / clicks * 100
+                };
+            });
+            
+            // Calculate totals
+            const totalRevenue = reportData.reduce((sum, item) => sum + item.revenue, 0);
+            const totalClicks = reportData.reduce((sum, item) => sum + item.clicks, 0);
+            const totalConversions = reportData.reduce((sum, item) => sum + item.conversions, 0);
+            const avgConversionRate = totalConversions / totalClicks * 100;
+            
+            // Render report
+            const reportHTML = `
+                <div class="summary-cards">
+                    <div class="summary-card highlight">
+                        <span class="summary-number">$${totalRevenue.toFixed(0)}</span>
+                        <div class="summary-label">Total Revenue</div>
+                    </div>
+                    <div class="summary-card">
+                        <span class="summary-number">${totalClicks.toLocaleString()}</span>
+                        <div class="summary-label">Total Clicks</div>
+                    </div>
+                    <div class="summary-card">
+                        <span class="summary-number">${totalConversions}</span>
+                        <div class="summary-label">Conversions</div>
+                    </div>
+                    <div class="summary-card">
+                        <span class="summary-number">${avgConversionRate.toFixed(1)}%</span>
+                        <div class="summary-label">Avg Conversion Rate</div>
+                    </div>
+                </div>
+                
+                <div class="report-section">
+                    <div class="section-header">
+                        <h3>ASIN Performance Breakdown</h3>
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ASIN</th>
+                                <th>Market</th>
+                                <th>Rate</th>
+                                <th>Revenue</th>
+                                <th>Clicks</th>
+                                <th>Conversions</th>
+                                <th>Performance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${reportData.map(item => `
+                                <tr>
+                                    <td><strong>${item.asin}</strong></td>
+                                    <td><span class="status-badge status-active">${item.market}</span></td>
+                                    <td>${item.rate}%</td>
+                                    <td><strong>$${item.revenue.toFixed(0)}</strong></td>
+                                    <td>${item.clicks.toLocaleString()}</td>
+                                    <td>${item.conversions}</td>
+                                    <td>
+                                        <div class="performance-bar">
+                                            <div class="performance-fill" style="width: ${Math.min(item.conversionRate * 20, 100)}%"></div>
+                                            <div class="performance-text">${item.conversionRate.toFixed(1)}%</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="report-section">
+                    <div class="section-header">
+                        <h3>Market Performance</h3>
+                    </div>
+                    <div class="chart-placeholder">
+                        📈 Market performance chart would be displayed here
+                        <br><small>Integration with chart library (Chart.js, D3.js) in production</small>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('reportContent').innerHTML = reportHTML;
+        }
+        
+        function downloadReport() {
+            const asins = JSON.parse(localStorage.getItem('sellerAsins') || '[]');
+            
+            if (asins.length === 0) {
+                alert('No ASINs available to generate report');
+                return;
+            }
+            
+            // Generate CSV report
+            const lastMonth = new Date();
+            lastMonth.setMonth(lastMonth.getMonth() - 1);
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"];
+            
+            let csvContent = `SellersMedia Monthly Report - ${monthNames[lastMonth.getMonth()]} ${lastMonth.getFullYear()}\n\n`;
+            csvContent += `ASIN,Market,Rate(%),Revenue($),Clicks,Conversions,Conversion Rate(%)\n`;
+            
+            asins.forEach(asin => {
+                const baseRevenue = Math.random() * 500 + 50;
+                const clicks = Math.floor(Math.random() * 1000) + 100;
+                const conversions = Math.floor(clicks * (Math.random() * 0.1 + 0.02));
+                const revenue = baseRevenue * (asin.rate / 100);
+                const conversionRate = conversions / clicks * 100;
+                
+                csvContent += `${asin.asin},${asin.market},${asin.rate},${revenue.toFixed(2)},${clicks},${conversions},${conversionRate.toFixed(2)}\n`;
+            });
+            
+            // Download CSV
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sellermedia-report-${monthNames[lastMonth.getMonth()].toLowerCase()}-${lastMonth.getFullYear()}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+        
+        function logout() {
+            localStorage.removeItem('sellerLoggedIn');
+            localStorage.removeItem('sellerEmail');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
