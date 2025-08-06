@@ -332,10 +332,10 @@
             <input type="file" id="csvFile" class="file-input" accept=".csv" onchange="handleFileUpload(event)">
             
             <div class="csv-format">
-                <strong>CSV Format:</strong> asin, market, rate
+                <strong>CSV Format:</strong> seller_name, ASIN, country, % Commission, product_price, expiry_date, product_name, category, custom_label1
                 <br>
-                <em>Example: B08N5WRWNW, US, 15.5</em>
-                <br><small>Columns: asin (Amazon product ID), market (US/UK/DE/FR/IT/ES/CA/JP), rate (percentage 0-100)</small>
+                <em>Example: John Seller, B08N5WRWNW, US, 15, 29.99, 2024-12-31, Wireless Headphones, Electronics, Premium</em>
+                <br><small>All columns optional except ASIN. Commission as whole number (15 = 15%)</small>
             </div>
         </div>
         
@@ -433,17 +433,23 @@
                     const newAsins = [];
                     
                     lines.forEach((line, index) => {
-                        if (index === 0 && (line.toLowerCase().includes('asin') || line.toLowerCase().includes('market') || line.toLowerCase().includes('rate'))) {
+                        if (index === 0 && (line.toLowerCase().includes('seller_name') || line.toLowerCase().includes('asin') || line.toLowerCase().includes('commission'))) {
                             return; // Skip header row
                         }
                         
-                        const [asin, market, rate] = line.split(',').map(item => item.trim());
+                        const values = line.split(',').map(item => item.trim().replace(/"/g, ''));
                         
-                        if (asin && market && rate) {
+                        if (values.length >= 2 && values[1]) { // At least ASIN is required
                             newAsins.push({
-                                asin: asin.replace(/"/g, ''),
-                                market: market.replace(/"/g, ''),
-                                rate: parseFloat(rate.replace(/[%"]/g, '')) || 0
+                                seller_name: values[0] || '',
+                                ASIN: values[1] || '',
+                                country: values[2] || '',
+                                '% Commission': parseInt(values[3]) || 0,
+                                product_price: parseFloat(values[4]) || 0,
+                                expiry_date: values[5] || null,
+                                product_name: values[6] || '',
+                                category: values[7] || '',
+                                custom_label1: values[8] || ''
                             });
                         }
                     });
@@ -506,36 +512,71 @@
                 <table class="table">
                     <thead>
                         <tr>
+                            <th>Seller</th>
                             <th>ASIN</th>
-                            <th>Market</th>
-                            <th>Rate (%)</th>
+                            <th>Country</th>
+                            <th>Commission %</th>
+                            <th>Price</th>
+                            <th>Product Name</th>
+                            <th>Category</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         ${asins.map((asin, index) => `
                             <tr>
-                                <td><strong>${asin.asin}</strong></td>
                                 <td>
-                                    <select class="market-select" onchange="updateAsinField('${asin.id}', ${index}, 'market', this.value)">
-                                        <option value="US" ${asin.market === 'US' ? 'selected' : ''}>US</option>
-                                        <option value="UK" ${asin.market === 'UK' ? 'selected' : ''}>UK</option>
-                                        <option value="DE" ${asin.market === 'DE' ? 'selected' : ''}>DE</option>
-                                        <option value="FR" ${asin.market === 'FR' ? 'selected' : ''}>FR</option>
-                                        <option value="IT" ${asin.market === 'IT' ? 'selected' : ''}>IT</option>
-                                        <option value="ES" ${asin.market === 'ES' ? 'selected' : ''}>ES</option>
-                                        <option value="CA" ${asin.market === 'CA' ? 'selected' : ''}>CA</option>
-                                        <option value="JP" ${asin.market === 'JP' ? 'selected' : ''}>JP</option>
+                                    <input type="text" 
+                                           class="rate-input" 
+                                           value="${asin.seller_name || ''}" 
+                                           placeholder="Seller name"
+                                           onchange="updateAsinField('${asin.id}', ${index}, 'seller_name', this.value)">
+                                </td>
+                                <td><strong>${asin.ASIN || ''}</strong></td>
+                                <td>
+                                    <select class="market-select" onchange="updateAsinField('${asin.id}', ${index}, 'country', this.value)">
+                                        <option value="">Select</option>
+                                        <option value="US" ${asin.country === 'US' ? 'selected' : ''}>US</option>
+                                        <option value="UK" ${asin.country === 'UK' ? 'selected' : ''}>UK</option>
+                                        <option value="DE" ${asin.country === 'DE' ? 'selected' : ''}>DE</option>
+                                        <option value="FR" ${asin.country === 'FR' ? 'selected' : ''}>FR</option>
+                                        <option value="IT" ${asin.country === 'IT' ? 'selected' : ''}>IT</option>
+                                        <option value="ES" ${asin.country === 'ES' ? 'selected' : ''}>ES</option>
+                                        <option value="CA" ${asin.country === 'CA' ? 'selected' : ''}>CA</option>
+                                        <option value="JP" ${asin.country === 'JP' ? 'selected' : ''}>JP</option>
                                     </select>
                                 </td>
                                 <td>
                                     <input type="number" 
                                            class="rate-input" 
-                                           value="${asin.rate}" 
+                                           value="${asin['% Commission'] || ''}" 
                                            min="0" 
                                            max="100" 
-                                           step="0.1"
-                                           onchange="updateAsinField('${asin.id}', ${index}, 'rate', parseFloat(this.value) || 0)">
+                                           placeholder="15"
+                                           onchange="updateAsinField('${asin.id}', ${index}, '% Commission', parseInt(this.value) || 0)">
+                                </td>
+                                <td>
+                                    <input type="number" 
+                                           class="rate-input" 
+                                           value="${asin.product_price || ''}" 
+                                           min="0" 
+                                           step="0.01"
+                                           placeholder="29.99"
+                                           onchange="updateAsinField('${asin.id}', ${index}, 'product_price', parseFloat(this.value) || 0)">
+                                </td>
+                                <td>
+                                    <input type="text" 
+                                           class="rate-input" 
+                                           value="${asin.product_name || ''}" 
+                                           placeholder="Product name"
+                                           onchange="updateAsinField('${asin.id}', ${index}, 'product_name', this.value)">
+                                </td>
+                                <td>
+                                    <input type="text" 
+                                           class="rate-input" 
+                                           value="${asin.category || ''}" 
+                                           placeholder="Electronics"
+                                           onchange="updateAsinField('${asin.id}', ${index}, 'category', this.value)">
                                 </td>
                                 <td>
                                     <button class="delete-btn" onclick="deleteAsinFromDB('${asin.id}', ${index})">Delete</button>
@@ -556,11 +597,8 @@
                     asins[index][field] = value;
                 }
                 
-                // Update in database
-                const { error } = await supabase
-                    .from('seller_asins')
-                    .update({ [field]: value })
-                    .eq('id', id);
+                // Update in database using the database helper
+                const { error } = await database.updateAsin(id, field, value);
                 
                 if (error) {
                     throw error;
@@ -610,11 +648,12 @@
             }
             
             try {
-                // Delete all user's ASINs
+                // Delete all ASINs (Note: This will delete ALL records in the table)
+                // In production, you'd want to add user filtering
                 const { error } = await supabase
-                    .from('seller_asins')
+                    .from("Sellers's ASINs")
                     .delete()
-                    .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all user's records
+                    .neq('id', 0); // Delete all records
                 
                 if (error) {
                     throw error;
@@ -631,16 +670,16 @@
         }
         
         function downloadTemplate() {
-            // CSV template matching Supabase database columns: asin, market, rate
-            const csvContent = `asin,market,rate
-B08N5WRWNW,US,15.5
-B07XJ8C8F5,UK,12.3
-B09KMVJY8P,DE,18.7
-B07VJKQXW9,FR,14.2
-B08XQVYQMH,IT,16.8
-B09N3ZPQRS,ES,13.1
-B08HMWZBXC,CA,17.3
-B07PDHSJ41,JP,11.9`;
+            // CSV template matching Supabase "Sellers's ASINs" table
+            const csvContent = `seller_name,ASIN,country,% Commission,product_price,expiry_date,product_name,category,custom_label1
+John Seller,B08N5WRWNW,US,15,29.99,2024-12-31,Wireless Headphones,Electronics,Premium
+Jane Merchant,B07XJ8C8F5,UK,12,45.50,2024-11-30,Bluetooth Speaker,Electronics,Featured
+Mike Store,B09KMVJY8P,DE,18,19.99,2025-01-15,Phone Case,Accessories,Trending
+Sarah Shop,B07VJKQXW9,FR,14,89.99,2024-10-31,Smart Watch,Wearables,High Convert
+Tech Depot,B08XQVYQMH,IT,16,12.99,2024-12-15,USB Cable,Accessories,Basic
+Global Goods,B09N3ZPQRS,ES,13,65.00,2025-02-28,Gaming Mouse,Electronics,Gaming
+Best Deals,B08HMWZBXC,CA,17,24.99,2024-11-15,Keyboard,Electronics,Office
+Top Seller,B07PDHSJ41,JP,11,199.99,2024-12-31,Laptop Stand,Accessories,Ergonomic`;
             
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const url = window.URL.createObjectURL(blob);

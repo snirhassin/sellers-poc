@@ -57,10 +57,10 @@ const auth = {
 
 // Database helper functions
 const database = {
-  // Get user's ASINs
+  // Get user's ASINs from the "Sellers's ASINs" table
   async getAsins() {
     const { data, error } = await supabase
-      .from('seller_asins')
+      .from("Sellers's ASINs")
       .select('*')
       .order('created_at', { ascending: false });
     
@@ -69,21 +69,22 @@ const database = {
 
   // Add/Update ASINs (bulk operation)
   async saveAsins(asins) {
-    // First, delete all existing ASINs for this user
-    const { error: deleteError } = await supabase
-      .from('seller_asins')
-      .delete()
-      .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all user's records
-    
-    if (deleteError) return { error: deleteError };
+    // Note: For this POC, we'll just insert new records
+    // In production, you might want to handle duplicates differently
     
     // Insert new ASINs
     const { data, error } = await supabase
-      .from('seller_asins')
+      .from("Sellers's ASINs")
       .insert(asins.map(asin => ({
-        asin: asin.asin,
-        market: asin.market,
-        rate: parseFloat(asin.rate)
+        seller_name: asin.seller_name || '',
+        ASIN: asin.ASIN || asin.asin, // Handle both formats
+        country: asin.country || asin.market,
+        '% Commission': parseInt(asin['% Commission'] || asin.rate || 0),
+        product_price: parseFloat(asin.product_price || 0),
+        expiry_date: asin.expiry_date || null,
+        product_name: asin.product_name || '',
+        category: asin.category || '',
+        custom_label1: asin.custom_label1 || ''
       })));
     
     return { data, error };
@@ -92,28 +93,44 @@ const database = {
   // Delete specific ASIN
   async deleteAsin(id) {
     const { error } = await supabase
-      .from('seller_asins')
+      .from("Sellers's ASINs")
       .delete()
       .eq('id', id);
     
     return { error };
   },
 
-  // Get performance report data
-  async getPerformanceReport() {
-    const { data, error } = await supabase
-      .from('user_asin_performance')
-      .select('*');
+  // Update specific ASIN
+  async updateAsin(id, field, value) {
+    const updateData = {};
+    updateData[field] = value;
     
-    return { data, error };
-  },
-
-  // Generate mock performance data
-  async generateMockData() {
-    const { data, error } = await supabase
-      .rpc('generate_mock_performance_data');
+    const { error } = await supabase
+      .from("Sellers's ASINs")
+      .update(updateData)
+      .eq('id', id);
     
     return { error };
+  },
+
+  // Get performance report data (mock for now)
+  async getPerformanceReport() {
+    // Since we don't have the performance_reports table with your structure,
+    // we'll generate mock data based on the ASINs
+    const { data: asins, error } = await this.getAsins();
+    
+    if (error) return { data: null, error };
+    
+    // Generate mock performance data
+    const performanceData = asins?.map(asin => ({
+      ...asin,
+      revenue: (parseFloat(asin.product_price || 0) * (parseInt(asin['% Commission'] || 0) / 100) * (Math.random() * 50 + 10)).toFixed(2),
+      clicks: Math.floor(Math.random() * 1000) + 100,
+      conversions: Math.floor(Math.random() * 50) + 5,
+      conversion_rate: (Math.random() * 8 + 2).toFixed(2)
+    })) || [];
+    
+    return { data: performanceData, error: null };
   }
 };
 
