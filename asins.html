@@ -332,10 +332,10 @@
             <input type="file" id="csvFile" class="file-input" accept=".csv" onchange="handleFileUpload(event)">
             
             <div class="csv-format">
-                <strong>CSV Format:</strong> seller_name, ASIN, country, % Commission, product_price, expiry_date, product_name, category, custom_label1
+                <strong>CSV Format:</strong> seller_name, country, product_name, ASIN, product_price, % Commission, expiry_date (optional), category (optional), custom_label1 (optional)
                 <br>
-                <em>Example: John Seller, B08N5WRWNW, US, 15, 29.99, 2024-12-31, Wireless Headphones, Electronics, Premium</em>
-                <br><small>All columns optional except ASIN. Commission as whole number (15 = 15%)</small>
+                <em>Example: John Seller, US, Wireless Headphones, B08N5WRWNW, 29.99, 15, 2024-12-31, Electronics, Premium</em>
+                <br><small>Required: seller_name, country, product_name, ASIN, product_price, % Commission. Optional: expiry_date, category, custom_label1</small>
             </div>
         </div>
         
@@ -439,15 +439,15 @@
                         
                         const values = line.split(',').map(item => item.trim().replace(/"/g, ''));
                         
-                        if (values.length >= 2 && values[1]) { // At least ASIN is required
+                        if (values.length >= 6 && values[0] && values[1] && values[2] && values[3]) { // Required fields: seller_name, country, product_name, ASIN
                             newAsins.push({
                                 seller_name: values[0] || '',
-                                ASIN: values[1] || '',
-                                country: values[2] || '',
-                                '% Commission': parseInt(values[3]) || 0,
+                                country: values[1] || '',
+                                product_name: values[2] || '',
+                                ASIN: values[3] || '',
                                 product_price: parseFloat(values[4]) || 0,
-                                expiry_date: values[5] || null,
-                                product_name: values[6] || '',
+                                '% Commission': parseInt(values[5]) || 0,
+                                expiry_date: values[6] || null,
                                 category: values[7] || '',
                                 custom_label1: values[8] || ''
                             });
@@ -513,12 +513,13 @@
                     <thead>
                         <tr>
                             <th>Seller</th>
-                            <th>ASIN</th>
                             <th>Country</th>
-                            <th>Commission %</th>
-                            <th>Price</th>
                             <th>Product Name</th>
-                            <th>Category</th>
+                            <th>ASIN</th>
+                            <th>Price</th>
+                            <th>Commission %</th>
+                            <th>Expiry Date (optional)</th>
+                            <th>Category (optional)</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -532,7 +533,6 @@
                                            placeholder="Seller name"
                                            onchange="updateAsinField('${asin.id}', ${index}, 'seller_name', this.value)">
                                 </td>
-                                <td><strong>${asin.ASIN || ''}</strong></td>
                                 <td>
                                     <select class="market-select" onchange="updateAsinField('${asin.id}', ${index}, 'country', this.value)">
                                         <option value="">Select</option>
@@ -547,14 +547,13 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <input type="number" 
+                                    <input type="text" 
                                            class="rate-input" 
-                                           value="${asin['% Commission'] || ''}" 
-                                           min="0" 
-                                           max="100" 
-                                           placeholder="15"
-                                           onchange="updateAsinField('${asin.id}', ${index}, '% Commission', parseInt(this.value) || 0)">
+                                           value="${asin.product_name || ''}" 
+                                           placeholder="Product name"
+                                           onchange="updateAsinField('${asin.id}', ${index}, 'product_name', this.value)">
                                 </td>
+                                <td><strong>${asin.ASIN || ''}</strong></td>
                                 <td>
                                     <input type="number" 
                                            class="rate-input" 
@@ -565,11 +564,19 @@
                                            onchange="updateAsinField('${asin.id}', ${index}, 'product_price', parseFloat(this.value) || 0)">
                                 </td>
                                 <td>
-                                    <input type="text" 
+                                    <input type="number" 
                                            class="rate-input" 
-                                           value="${asin.product_name || ''}" 
-                                           placeholder="Product name"
-                                           onchange="updateAsinField('${asin.id}', ${index}, 'product_name', this.value)">
+                                           value="${asin['% Commission'] || ''}" 
+                                           min="0" 
+                                           max="100" 
+                                           placeholder="15"
+                                           onchange="updateAsinField('${asin.id}', ${index}, '% Commission', parseInt(this.value) || 0)">
+                                </td>
+                                <td>
+                                    <input type="date" 
+                                           class="rate-input" 
+                                           value="${asin.expiry_date || ''}" 
+                                           onchange="updateAsinField('${asin.id}', ${index}, 'expiry_date', this.value)">
                                 </td>
                                 <td>
                                     <input type="text" 
@@ -670,16 +677,16 @@
         }
         
         function downloadTemplate() {
-            // CSV template matching Supabase "Sellers's ASINs" table
-            const csvContent = `seller_name,ASIN,country,% Commission,product_price,expiry_date,product_name,category,custom_label1
-John Seller,B08N5WRWNW,US,15,29.99,2024-12-31,Wireless Headphones,Electronics,Premium
-Jane Merchant,B07XJ8C8F5,UK,12,45.50,2024-11-30,Bluetooth Speaker,Electronics,Featured
-Mike Store,B09KMVJY8P,DE,18,19.99,2025-01-15,Phone Case,Accessories,Trending
-Sarah Shop,B07VJKQXW9,FR,14,89.99,2024-10-31,Smart Watch,Wearables,High Convert
-Tech Depot,B08XQVYQMH,IT,16,12.99,2024-12-15,USB Cable,Accessories,Basic
-Global Goods,B09N3ZPQRS,ES,13,65.00,2025-02-28,Gaming Mouse,Electronics,Gaming
-Best Deals,B08HMWZBXC,CA,17,24.99,2024-11-15,Keyboard,Electronics,Office
-Top Seller,B07PDHSJ41,JP,11,199.99,2024-12-31,Laptop Stand,Accessories,Ergonomic`;
+            // CSV template matching new Supabase "Sellers's ASINs" table order
+            const csvContent = `seller_name,country,product_name,ASIN,product_price,% Commission,expiry_date,category,custom_label1
+John Seller,US,Wireless Headphones,B08N5WRWNW,29.99,15,2024-12-31,Electronics,Premium
+Jane Merchant,UK,Bluetooth Speaker,B07XJ8C8F5,45.50,12,2024-11-30,Electronics,Featured
+Mike Store,DE,Phone Case,B09KMVJY8P,19.99,18,2025-01-15,Accessories,Trending
+Sarah Shop,FR,Smart Watch,B07VJKQXW9,89.99,14,2024-10-31,Wearables,High Convert
+Tech Depot,IT,USB Cable,B08XQVYQMH,12.99,16,2024-12-15,Accessories,Basic
+Global Goods,ES,Gaming Mouse,B09N3ZPQRS,65.00,13,2025-02-28,Electronics,Gaming
+Best Deals,CA,Keyboard,B08HMWZBXC,24.99,17,2024-11-15,Electronics,Office
+Top Seller,JP,Laptop Stand,B07PDHSJ41,199.99,11,2024-12-31,Accessories,Ergonomic`;
             
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const url = window.URL.createObjectURL(blob);

@@ -72,17 +72,17 @@ const database = {
     // Note: For this POC, we'll just insert new records
     // In production, you might want to handle duplicates differently
     
-    // Insert new ASINs
+    // Insert new ASINs with correct field order
     const { data, error } = await supabase
       .from("Sellers's ASINs")
       .insert(asins.map(asin => ({
         seller_name: asin.seller_name || '',
-        ASIN: asin.ASIN || asin.asin, // Handle both formats
-        country: asin.country || asin.market,
-        '% Commission': parseInt(asin['% Commission'] || asin.rate || 0),
-        product_price: parseFloat(asin.product_price || 0),
-        expiry_date: asin.expiry_date || null,
+        country: asin.country || asin.market || '',
         product_name: asin.product_name || '',
+        ASIN: asin.ASIN || asin.asin || '',
+        product_price: parseFloat(asin.product_price || 0),
+        '% Commission': parseInt(asin['% Commission'] || asin.rate || 0),
+        expiry_date: asin.expiry_date || null,
         category: asin.category || '',
         custom_label1: asin.custom_label1 || ''
       })));
