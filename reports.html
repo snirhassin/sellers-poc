@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monthly Reports - SellersMedia</title>
+    
+    <!-- Supabase Client -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -317,27 +322,65 @@
     </div>
 
     <script>
-        // Check if user is logged in
-        if (!localStorage.getItem('sellerLoggedIn')) {
-            window.location.href = 'index.html';
+        let currentUser = null;
+
+        // Check authentication and load data
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Wait for Supabase to load
+            setTimeout(async () => {
+                await checkAuthAndLoadData();
+            }, 100);
+        });
+
+        async function checkAuthAndLoadData() {
+            try {
+                // Check if user is logged in
+                const isLoggedIn = await auth.isLoggedIn();
+                if (!isLoggedIn) {
+                    window.location.href = 'index.html';
+                    return;
+                }
+                
+                // Get current user
+                currentUser = await auth.getCurrentUser();
+                if (currentUser) {
+                    document.getElementById('userEmail').textContent = currentUser.email;
+                }
+                
+                // Set report date (last month)
+                const lastMonth = new Date();
+                lastMonth.setMonth(lastMonth.getMonth() - 1);
+                const monthNames = ["January", "February", "March", "April", "May", "June",
+                    "July", "August", "September", "October", "November", "December"];
+                document.getElementById('reportDate').textContent = 
+                    `${monthNames[lastMonth.getMonth()]} ${lastMonth.getFullYear()} Report`;
+                
+                // Load ASINs and generate report
+                await loadReportData();
+                
+            } catch (error) {
+                console.error('Reports initialization error:', error);
+                utils.showNotification('Error loading reports', 'error');
+            }
         }
-        
-        // Display user email
-        document.getElementById('userEmail').textContent = localStorage.getItem('sellerEmail') || 'Seller';
-        
-        // Set report date (last month)
-        const lastMonth = new Date();
-        lastMonth.setMonth(lastMonth.getMonth() - 1);
-        const monthNames = ["January", "February", "March", "April", "May", "June",
-            "July", "August", "September", "October", "November", "December"];
-        document.getElementById('reportDate').textContent = 
-            `${monthNames[lastMonth.getMonth()]} ${lastMonth.getFullYear()} Report`;
-        
-        // Load ASINs and generate report
-        const asins = JSON.parse(localStorage.getItem('sellerAsins') || '[]');
-        
-        if (asins.length > 0) {
-            generateReport(asins);
+
+        async function loadReportData() {
+            try {
+                const { data: asins, error } = await database.getAsins();
+                
+                if (error) {
+                    console.error('Error loading ASINs:', error);
+                    return;
+                }
+                
+                if (asins && asins.length > 0) {
+                    generateReport(asins);
+                }
+                
+            } catch (error) {
+                console.error('Error loading report data:', error);
+                utils.showNotification('Error loading report data', 'error');
+            }
         }
         
         function generateReport(asins) {
@@ -473,10 +516,15 @@
             window.URL.revokeObjectURL(url);
         }
         
-        function logout() {
-            localStorage.removeItem('sellerLoggedIn');
-            localStorage.removeItem('sellerEmail');
-            window.location.href = 'index.html';
+        async function logout() {
+            try {
+                await auth.signOut();
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Logout error:', error);
+                // Fallback: redirect anyway
+                window.location.href = 'index.html';
+            }
         }
     </script>
 </body>

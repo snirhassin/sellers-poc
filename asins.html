@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASIN Management - SellersMedia</title>
+    
+    <!-- Supabase Client -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -350,33 +355,68 @@
     </div>
 
     <script>
-        // Check if user is logged in
-        if (!localStorage.getItem('sellerLoggedIn')) {
-            window.location.href = 'index.html';
+        let currentUser = null;
+        let asins = [];
+
+        // Check authentication and load data
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Wait for Supabase to load
+            setTimeout(async () => {
+                await checkAuthAndLoadData();
+            }, 100);
+        });
+
+        async function checkAuthAndLoadData() {
+            try {
+                // Check if user is logged in
+                const isLoggedIn = await auth.isLoggedIn();
+                if (!isLoggedIn) {
+                    window.location.href = 'index.html';
+                    return;
+                }
+                
+                // Get current user
+                currentUser = await auth.getCurrentUser();
+                if (currentUser) {
+                    document.getElementById('userEmail').textContent = currentUser.email;
+                }
+                
+                // Load ASINs from database
+                await loadAsinsFromDatabase();
+                
+            } catch (error) {
+                console.error('Page initialization error:', error);
+                utils.showNotification('Error loading page', 'error');
+            }
         }
-        
-        // Display user email
-        document.getElementById('userEmail').textContent = localStorage.getItem('sellerEmail') || 'Seller';
-        
-        let asins = JSON.parse(localStorage.getItem('sellerAsins') || '[]');
-        
-        // Load existing ASINs
-        renderAsinsTable();
-        
+
+        async function loadAsinsFromDatabase() {
+            try {
+                utils.showLoading('tableContainer');
+                const { data, error } = await database.getAsins();
+                
+                if (error) {
+                    console.error('Error loading ASINs:', error);
+                    utils.showNotification('Error loading ASINs from database', 'error');
+                    return;
+                }
+                
+                asins = data || [];
+                renderAsinsTable();
+                
+            } catch (error) {
+                console.error('Error loading ASINs:', error);
+                utils.showNotification('Error loading ASINs', 'error');
+            } finally {
+                utils.hideLoading('tableContainer');
+            }
+        }
+
         function showAlert(message, type = 'success') {
-            const alertContainer = document.getElementById('alertContainer');
-            const alert = document.createElement('div');
-            alert.className = `alert alert-${type}`;
-            alert.textContent = message;
-            alertContainer.innerHTML = '';
-            alertContainer.appendChild(alert);
-            
-            setTimeout(() => {
-                alertContainer.innerHTML = '';
-            }, 5000);
+            utils.showNotification(message, type);
         }
         
-        function handleFileUpload(event) {
+        async function handleFileUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
             
@@ -386,7 +426,7 @@
             }
             
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = async function(e) {
                 try {
                     const csv = e.target.result;
                     const lines = csv.split('\n').filter(line => line.trim());
@@ -409,13 +449,14 @@
                     });
                     
                     if (newAsins.length > 0) {
-                        asins = newAsins;
-                        renderAsinsTable();
+                        // Save to database
+                        await saveAsinsToDatabase(newAsins);
                         showAlert(`Successfully loaded ${newAsins.length} ASINs from CSV`);
                     } else {
                         showAlert('No valid ASIN data found in CSV file', 'error');
                     }
                 } catch (error) {
+                    console.error('CSV parsing error:', error);
                     showAlert('Error parsing CSV file', 'error');
                 }
             };
@@ -423,6 +464,26 @@
             
             // Reset file input
             event.target.value = '';
+        }
+
+        async function saveAsinsToDatabase(newAsins) {
+            try {
+                utils.showLoading('tableContainer');
+                const { error } = await database.saveAsins(newAsins);
+                
+                if (error) {
+                    throw error;
+                }
+                
+                // Reload from database
+                await loadAsinsFromDatabase();
+                
+            } catch (error) {
+                console.error('Error saving ASINs:', error);
+                showAlert('Error saving ASINs to database', 'error');
+            } finally {
+                utils.hideLoading('tableContainer');
+            }
         }
         
         function renderAsinsTable() {
@@ -456,7 +517,7 @@
                             <tr>
                                 <td><strong>${asin.asin}</strong></td>
                                 <td>
-                                    <select class="market-select" onchange="updateAsin(${index}, 'market', this.value)">
+                                    <select class="market-select" onchange="updateAsinField('${asin.id}', ${index}, 'market', this.value)">
                                         <option value="US" ${asin.market === 'US' ? 'selected' : ''}>US</option>
                                         <option value="UK" ${asin.market === 'UK' ? 'selected' : ''}>UK</option>
                                         <option value="DE" ${asin.market === 'DE' ? 'selected' : ''}>DE</option>
@@ -474,10 +535,10 @@
                                            min="0" 
                                            max="100" 
                                            step="0.1"
-                                           onchange="updateAsin(${index}, 'rate', parseFloat(this.value) || 0)">
+                                           onchange="updateAsinField('${asin.id}', ${index}, 'rate', parseFloat(this.value) || 0)">
                                 </td>
                                 <td>
-                                    <button class="delete-btn" onclick="deleteAsin(${index})">Delete</button>
+                                    <button class="delete-btn" onclick="deleteAsinFromDB('${asin.id}', ${index})">Delete</button>
                                 </td>
                             </tr>
                         `).join('')}
@@ -488,31 +549,84 @@
             container.innerHTML = table;
         }
         
-        function updateAsin(index, field, value) {
-            if (asins[index]) {
-                asins[index][field] = value;
+        async function updateAsinField(id, index, field, value) {
+            try {
+                // Update local array
+                if (asins[index]) {
+                    asins[index][field] = value;
+                }
+                
+                // Update in database
+                const { error } = await supabase
+                    .from('seller_asins')
+                    .update({ [field]: value })
+                    .eq('id', id);
+                
+                if (error) {
+                    throw error;
+                }
+                
+                showAlert('ASIN updated successfully');
+                
+            } catch (error) {
+                console.error('Error updating ASIN:', error);
+                showAlert('Error updating ASIN', 'error');
+                // Reload to revert changes
+                await loadAsinsFromDatabase();
             }
         }
         
-        function deleteAsin(index) {
-            if (confirm('Are you sure you want to delete this ASIN?')) {
+        async function deleteAsinFromDB(id, index) {
+            if (!confirm('Are you sure you want to delete this ASIN?')) {
+                return;
+            }
+            
+            try {
+                const { error } = await database.deleteAsin(id);
+                
+                if (error) {
+                    throw error;
+                }
+                
+                // Remove from local array
                 asins.splice(index, 1);
                 renderAsinsTable();
                 showAlert('ASIN deleted successfully');
+                
+            } catch (error) {
+                console.error('Error deleting ASIN:', error);
+                showAlert('Error deleting ASIN', 'error');
             }
         }
         
-        function saveAsins() {
-            localStorage.setItem('sellerAsins', JSON.stringify(asins));
-            showAlert('Changes saved successfully!');
+        async function saveAsins() {
+            // All changes are saved automatically when edited
+            showAlert('All changes are saved automatically!');
         }
         
-        function clearAllAsins() {
-            if (confirm('Are you sure you want to clear all ASINs? This action cannot be undone.')) {
+        async function clearAllAsins() {
+            if (!confirm('Are you sure you want to clear all ASINs? This action cannot be undone.')) {
+                return;
+            }
+            
+            try {
+                // Delete all user's ASINs
+                const { error } = await supabase
+                    .from('seller_asins')
+                    .delete()
+                    .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all user's records
+                
+                if (error) {
+                    throw error;
+                }
+                
                 asins = [];
                 renderAsinsTable();
-                localStorage.removeItem('sellerAsins');
                 showAlert('All ASINs cleared successfully');
+                
+            } catch (error) {
+                console.error('Error clearing ASINs:', error);
+                showAlert('Error clearing ASINs', 'error');
             }
         }
         
@@ -529,33 +643,43 @@
             window.URL.revokeObjectURL(url);
         }
         
-        function logout() {
-            localStorage.removeItem('sellerLoggedIn');
-            localStorage.removeItem('sellerEmail');
-            window.location.href = 'index.html';
+        async function logout() {
+            try {
+                await auth.signOut();
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Logout error:', error);
+                // Fallback: redirect anyway
+                window.location.href = 'index.html';
+            }
         }
         
         // Drag and drop functionality
-        const uploadArea = document.querySelector('.upload-area');
-        
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
-        
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
-        
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                document.getElementById('csvFile').files = files;
-                handleFileUpload({ target: { files: files } });
-            }
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                const uploadArea = document.querySelector('.upload-area');
+                if (!uploadArea) return;
+                
+                uploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.add('dragover');
+                });
+                
+                uploadArea.addEventListener('dragleave', () => {
+                    uploadArea.classList.remove('dragover');
+                });
+                
+                uploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.remove('dragover');
+                    
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        document.getElementById('csvFile').files = files;
+                        handleFileUpload({ target: { files: files } });
+                    }
+                });
+            }, 200);
         });
     </script>
 </body>
