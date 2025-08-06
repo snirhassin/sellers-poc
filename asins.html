@@ -327,9 +327,10 @@
             <input type="file" id="csvFile" class="file-input" accept=".csv" onchange="handleFileUpload(event)">
             
             <div class="csv-format">
-                <strong>CSV Format:</strong> ASIN, Market, Rate(%)
+                <strong>CSV Format:</strong> asin, market, rate
                 <br>
                 <em>Example: B08N5WRWNW, US, 15.5</em>
+                <br><small>Columns: asin (Amazon product ID), market (US/UK/DE/FR/IT/ES/CA/JP), rate (percentage 0-100)</small>
             </div>
         </div>
         
@@ -392,7 +393,7 @@
                     const newAsins = [];
                     
                     lines.forEach((line, index) => {
-                        if (index === 0 && (line.toLowerCase().includes('asin') || line.toLowerCase().includes('market'))) {
+                        if (index === 0 && (line.toLowerCase().includes('asin') || line.toLowerCase().includes('market') || line.toLowerCase().includes('rate'))) {
                             return; // Skip header row
                         }
                         
@@ -516,7 +517,7 @@
         }
         
         function downloadTemplate() {
-            const csvContent = "ASIN,Market,Rate\nB08N5WRWNW,US,15.5\nB07XJ8C8F5,UK,12.3\nB09KMVJY8P,DE,18.7";
+            const csvContent = "asin,market,rate\nB08N5WRWNW,US,15.5\nB07XJ8C8F5,UK,12.3\nB09KMVJY8P,DE,18.7\nB07VJKQXW9,FR,14.2\nB08XQVYQMH,IT,16.8\nB09N3ZPQRS,ES,13.1\nB08HMWZBXC,CA,17.3\nB07PDHSJ41,JP,11.9";
             const blob = new Blob([csvContent], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
