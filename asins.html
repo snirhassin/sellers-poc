@@ -439,13 +439,7 @@
                         
                         const values = line.split(',').map(item => item.trim().replace(/"/g, ''));
                         
-                        // Debug logging
-                        console.log('Processing line:', line);
-                        console.log('Values:', values);
-                        console.log('Values length:', values.length);
-                        
                         if (values.length >= 6 && values[0] && values[1] && values[2] && values[3] && values[4] && values[5]) { // All 6 required fields
-                            console.log('Adding ASIN:', values[3]);
                             newAsins.push({
                                 seller_name: values[0] || '',
                                 country: values[1] || '',
@@ -457,8 +451,6 @@
                                 category: values[7] || '',
                                 custom_label1: values[8] || ''
                             });
-                        } else {
-                            console.log('Skipping line - missing required fields:', values);
                         }
                     });
                     
@@ -482,16 +474,12 @@
 
         async function saveAsinsToDatabase(newAsins) {
             try {
-                console.log('Saving ASINs to database:', newAsins);
                 utils.showLoading('tableContainer');
                 const { data, error } = await database.saveAsins(newAsins);
                 
                 if (error) {
-                    console.error('Database save error:', error);
                     throw error;
                 }
-                
-                console.log('Database save result:', data);
                 
                 // Reload from database
                 await loadAsinsFromDatabase();
