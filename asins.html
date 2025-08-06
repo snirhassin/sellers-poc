@@ -631,12 +631,22 @@
         }
         
         function downloadTemplate() {
-            const csvContent = "asin,market,rate\nB08N5WRWNW,US,15.5\nB07XJ8C8F5,UK,12.3\nB09KMVJY8P,DE,18.7\nB07VJKQXW9,FR,14.2\nB08XQVYQMH,IT,16.8\nB09N3ZPQRS,ES,13.1\nB08HMWZBXC,CA,17.3\nB07PDHSJ41,JP,11.9";
-            const blob = new Blob([csvContent], { type: 'text/csv' });
+            // CSV template matching Supabase database columns: asin, market, rate
+            const csvContent = `asin,market,rate
+B08N5WRWNW,US,15.5
+B07XJ8C8F5,UK,12.3
+B09KMVJY8P,DE,18.7
+B07VJKQXW9,FR,14.2
+B08XQVYQMH,IT,16.8
+B09N3ZPQRS,ES,13.1
+B08HMWZBXC,CA,17.3
+B07PDHSJ41,JP,11.9`;
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'asin_template.csv';
+            a.download = 'sellermedia-asin-template.csv';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
