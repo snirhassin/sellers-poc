@@ -88,6 +88,52 @@
             transform: scale(1.05);
         }
         
+        .admin-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            min-width: 200px;
+            z-index: 1000;
+            display: none;
+            margin-top: 0.5rem;
+        }
+        
+        .admin-dropdown.show {
+            display: block;
+        }
+        
+        .admin-dropdown-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #333;
+            text-decoration: none;
+        }
+        
+        .admin-dropdown-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .admin-dropdown-item:last-child {
+            border-bottom: none;
+        }
+        
+        .admin-dropdown-item.danger {
+            color: #dc3545;
+        }
+        
+        .admin-dropdown-item.danger:hover {
+            background: #fff5f5;
+        }
+        
         .logout-btn {
             background: transparent;
             border: 2px solid white;
@@ -418,11 +464,23 @@
             <span class="admin-badge">Administrator</span>
         </div>
         <div class="user-info">
-            <span class="user-email">
-                <div class="admin-avatar">A</div>
-                admin@sellersmedia.com
-            </span>
-            <button class="logout-btn" onclick="window.location.href='index.html'">Logout</button>
+            <div style="position: relative;">
+                <span class="user-email" onclick="toggleAdminDropdown()">
+                    <div class="admin-avatar">A</div>
+                    admin@sellersmedia.com
+                </span>
+                <div class="admin-dropdown" id="adminDropdown">
+                    <div class="admin-dropdown-item" onclick="editAdminProfile()">
+                        👤 Edit Profile
+                    </div>
+                    <div class="admin-dropdown-item" onclick="resetAdminPassword()">
+                        🔑 Reset Password
+                    </div>
+                    <div class="admin-dropdown-item danger" onclick="adminLogout()">
+                        🚪 Logout
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     
@@ -964,6 +1022,172 @@
             });
             
             applySorting();
+        }
+
+        function toggleAdminDropdown() {
+            const dropdown = document.getElementById('adminDropdown');
+            dropdown.classList.toggle('show');
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('.user-email') && !event.target.closest('.admin-dropdown')) {
+                    dropdown.classList.remove('show');
+                }
+            });
+        }
+        
+        function editAdminProfile() {
+            const dropdown = document.getElementById('adminDropdown');
+            dropdown.classList.remove('show');
+            
+            // Create modal for profile editing
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.5); z-index: 2000; display: flex;
+                justify-content: center; align-items: center;
+            `;
+            
+            modal.innerHTML = `
+                <div style="background: white; padding: 2rem; border-radius: 8px; width: 90%; max-width: 500px;">
+                    <h3 style="margin-bottom: 1.5rem; color: #2c3e50;">Edit Admin Profile</h3>
+                    <form id="adminProfileForm">
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Full Name</label>
+                            <input type="text" id="adminName" value="Admin User" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Email</label>
+                            <input type="email" id="adminEmail" value="admin@sellersmedia.com" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Phone</label>
+                            <input type="tel" id="adminPhone" value="+1 (555) 123-4567" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Department</label>
+                            <select id="adminDepartment" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
+                                <option value="operations">Operations</option>
+                                <option value="technical" selected>Technical</option>
+                                <option value="management">Management</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                            <button type="button" onclick="closeModal(this)" style="padding: 0.75rem 1.5rem; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;">Cancel</button>
+                            <button type="submit" style="padding: 0.75rem 1.5rem; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Handle form submission
+            document.getElementById('adminProfileForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('Admin profile updated successfully!\\n\\nIn production, this would update the admin profile in the database.');
+                document.body.removeChild(modal);
+            });
+            
+            // Close modal when clicking background
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
+                }
+            });
+        }
+        
+        function resetAdminPassword() {
+            const dropdown = document.getElementById('adminDropdown');
+            dropdown.classList.remove('show');
+            
+            // Create password reset modal
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.5); z-index: 2000; display: flex;
+                justify-content: center; align-items: center;
+            `;
+            
+            modal.innerHTML = `
+                <div style="background: white; padding: 2rem; border-radius: 8px; width: 90%; max-width: 400px;">
+                    <h3 style="margin-bottom: 1.5rem; color: #2c3e50;">Reset Admin Password</h3>
+                    <form id="passwordResetForm">
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Current Password</label>
+                            <input type="password" id="currentPassword" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;" required>
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">New Password</label>
+                            <input type="password" id="newPassword" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;" required>
+                        </div>
+                        <div style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Confirm New Password</label>
+                            <input type="password" id="confirmPassword" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;" required>
+                        </div>
+                        <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                            <button type="button" onclick="closeModal(this)" style="padding: 0.75rem 1.5rem; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;">Cancel</button>
+                            <button type="submit" style="padding: 0.75rem 1.5rem; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer;">Reset Password</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Handle form submission
+            document.getElementById('passwordResetForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                
+                if (newPassword !== confirmPassword) {
+                    alert('New passwords do not match!');
+                    return;
+                }
+                
+                if (newPassword.length < 8) {
+                    alert('Password must be at least 8 characters long!');
+                    return;
+                }
+                
+                alert('Admin password reset successfully!\\n\\nIn production, this would update the password in the database and send a confirmation email.');
+                document.body.removeChild(modal);
+            });
+            
+            // Close modal when clicking background
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
+                }
+            });
+        }
+        
+        function closeModal(button) {
+            const modal = button.closest('div[style*="position: fixed"]').parentElement;
+            document.body.removeChild(modal);
+        }
+        
+        function adminLogout() {
+            const dropdown = document.getElementById('adminDropdown');
+            if (dropdown) dropdown.classList.remove('show');
+            
+            // Clear any admin session data
+            localStorage.removeItem('adminSession');
+            localStorage.removeItem('userSession');
+            sessionStorage.clear();
+            
+            // Clear browser cache for this session
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => {
+                        caches.delete(name);
+                    });
+                });
+            }
+            
+            // Redirect to main login page in logged out state
+            window.location.replace('index.html');
         }
 
         // Initialize page

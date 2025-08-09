@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Seller Management - SellersMedia</title>
+    <title>Admin - Seller Management - SellersMedia</title>
     
     <style>
         * {
@@ -32,36 +32,107 @@
         .header h1 {
             font-size: 1.8rem;
             font-weight: 300;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
         }
         
-        .admin-indicator {
+        .admin-badge {
             background: #e74c3c;
             color: white;
             padding: 0.3rem 0.8rem;
             border-radius: 12px;
-            font-size: 0.7rem;
+            font-size: 0.8rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-        }
-        
-        .seller-info-badge {
-            background: rgba(255,255,255,0.1);
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
         }
         
         .user-info {
             display: flex;
             align-items: center;
             gap: 1rem;
+        }
+        
+        .user-email {
+            color: white;
+            text-decoration: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .user-email:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        
+        .admin-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            transition: all 0.3s;
+        }
+        
+        .user-email:hover .admin-avatar {
+            border-color: rgba(255,255,255,0.6);
+            transform: scale(1.05);
+        }
+        
+        .admin-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            min-width: 200px;
+            z-index: 1000;
+            display: none;
+            margin-top: 0.5rem;
+        }
+        
+        .admin-dropdown.show {
+            display: block;
+        }
+        
+        .admin-dropdown-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #333;
+            text-decoration: none;
+        }
+        
+        .admin-dropdown-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .admin-dropdown-item:last-child {
+            border-bottom: none;
+        }
+        
+        .admin-dropdown-item.danger {
+            color: #dc3545;
+        }
+        
+        .admin-dropdown-item.danger:hover {
+            background: #fff5f5;
         }
         
         .back-btn {
@@ -73,17 +144,10 @@
             cursor: pointer;
             transition: all 0.3s;
             text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
         }
         
         .back-btn:hover {
             background: rgba(255,255,255,0.2);
-            color: white;
-        }
-        
-        .user-email {
             color: white;
         }
         
@@ -103,219 +167,61 @@
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 2rem auto;
             padding: 0 2rem;
         }
         
-        .tab-navigation {
+        .breadcrumb {
             background: white;
-            border-radius: 8px 8px 0 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            display: flex;
-            overflow-x: auto;
-        }
-        
-        .tab-btn {
             padding: 1rem 2rem;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            font-weight: 500;
-            color: #666;
-            transition: all 0.3s;
-            border-bottom: 3px solid transparent;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .tab-btn:hover, .tab-btn.active {
-            color: #2c3e50;
-            background: #f8f9fa;
-            border-bottom-color: #e74c3c;
-        }
-        
-        .tab-content {
-            background: white;
-            border-radius: 0 0 8px 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            min-height: 600px;
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        .tab-header {
-            padding: 2rem;
-            background: #f8f9fa;
-            border-bottom: 1px solid #dee2e6;
-        }
-        
-        .tab-header h2 {
-            color: #2c3e50;
-            margin-bottom: 0.5rem;
-        }
-        
-        .tab-body {
-            padding: 2rem;
-        }
-        
-        .admin-controls {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            padding: 1rem 1.5rem;
             border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .breadcrumb a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        .seller-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin-bottom: 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         
-        .admin-actions {
+        .seller-info h2 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .seller-details {
+            color: #666;
+        }
+        
+        .seller-status {
             display: flex;
             gap: 1rem;
-        }
-        
-        .admin-btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 4px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.9rem;
-        }
-        
-        .btn-upload {
-            background: #28a745;
-            color: white;
-        }
-        
-        .btn-suspend {
-            background: #dc3545;
-            color: white;
-        }
-        
-        .btn-reset-password {
-            background: #17a2b8;
-            color: white;
-        }
-        
-        
-        .admin-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        
-        .stat-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        
-        .stat-number {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #2c3e50;
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-        
-        .stat-label {
-            color: #666;
-            font-size: 0.9rem;
-        }
-        
-        .summary-cards {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-        
-        .summary-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        
-        .summary-card.highlight {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        .summary-number {
-            font-size: 2.5rem;
-            font-weight: bold;
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-        
-        .summary-label {
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-        
-        .report-section {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            overflow: hidden;
-            margin-bottom: 2rem;
-        }
-        
-        .section-header {
-            padding: 1.5rem;
-            background: #f8f9fa;
-            border-bottom: 1px solid #dee2e6;
-        }
-        
-        .section-header h3 {
-            color: #2c3e50;
-        }
-        
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        .table th,
-        .table td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #dee2e6;
-        }
-        
-        .table th {
-            background: #f8f9fa;
-            font-weight: 600;
-            color: #495057;
-        }
-        
-        .table tr:hover {
-            background: #f8f9fa;
+            align-items: center;
         }
         
         .status-badge {
-            padding: 0.3rem 0.8rem;
-            border-radius: 12px;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
             font-size: 0.8rem;
-            font-weight: 500;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .status-active {
@@ -323,89 +229,74 @@
             color: #155724;
         }
         
-        .download-btn {
-            background: #6c757d;
-            color: white;
-            padding: 0.8rem 1.5rem;
+        .tabs {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .tab-nav {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .tab-button {
+            flex: 1;
+            padding: 1.5rem 2rem;
             border: none;
-            border-radius: 6px;
+            background: transparent;
             cursor: pointer;
+            font-size: 1rem;
             font-weight: 500;
+            color: #666;
             transition: all 0.3s;
         }
         
-        .download-btn:hover {
-            background: #5a6268;
-            transform: translateY(-1px);
-        }
-        
-        .form-section {
-            margin-bottom: 2rem;
-        }
-        
-        .form-section h3 {
+        .tab-button:hover {
+            background: #e9ecef;
             color: #2c3e50;
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
         }
         
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
+        .tab-button.active {
+            background: white;
+            color: #2c3e50;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 2rem;
+            min-height: 600px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
             margin-bottom: 1.5rem;
-        }
-        
-        .form-group {
             display: flex;
-            flex-direction: column;
-        }
-        
-        .form-group.full-width {
-            grid-column: span 2;
-        }
-        
-        .form-group label {
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-            color: #2c3e50;
-        }
-        
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            padding: 0.75rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-        
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        
-        .form-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid #dee2e6;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .btn {
-            padding: 0.75rem 1.5rem;
+            padding: 0.5rem 1rem;
             border: none;
             border-radius: 4px;
-            font-weight: 500;
             cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
             transition: all 0.3s;
-            font-size: 1rem;
         }
         
         .btn-primary {
@@ -415,506 +306,945 @@
         
         .btn-primary:hover {
             background: #5a6fd8;
-        }
-        
-        .btn-secondary {
-            background: #6c757d;
             color: white;
         }
         
-        .btn-secondary:hover {
-            background: #5a6268;
+        .btn-success {
+            background: #28a745;
+            color: white;
         }
         
-        .admin-note {
-            background: #e3f2fd;
-            border: 1px solid #bbdefb;
+        .btn-success:hover {
+            background: #218838;
+            color: white;
+        }
+        
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .btn-info:hover {
+            background: #138496;
+            color: white;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .table th {
+            background: #f8f9fa;
             padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #2c3e50;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        .table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f3f4;
+        }
+        
+        .table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .asin-badge {
+            background: #667eea;
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-family: monospace;
+        }
+        
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+        
+        .status-paid {
+            background: #d4edda;
+            color: #155724;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+        
+        .status-unpaid {
+            background: #fff3cd;
+            color: #856404;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+        
+        .status-overdue {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
             border-radius: 4px;
-            color: #1565c0;
+            font-size: 1rem;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .stat-label {
             font-size: 0.9rem;
-            margin-top: 1rem;
+            color: #666;
+            margin-top: 0.5rem;
         }
         
         @media (max-width: 768px) {
-            .summary-cards {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 0.5rem;
+            .tab-nav {
+                flex-direction: column;
             }
             
-            .summary-card {
-                padding: 1rem;
+            .seller-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
             }
             
             .form-row {
                 grid-template-columns: 1fr;
-            }
-            
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .summary-cards {
-                grid-template-columns: 1fr;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .table {
-                font-size: 0.9rem;
-            }
-            
-            .table th,
-            .table td {
-                padding: 0.5rem;
             }
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <div style="display: flex; align-items: center; gap: 1rem;">
-            <h1>
-                Seller Management
-                <span class="admin-indicator">Admin View</span>
-            </h1>
-            <div class="seller-info-badge">
-                👤 <span id="currentSeller">Sarah Johnson (TechGadgets Pro)</span>
-            </div>
+        <div>
+            <h1>Admin - Seller Management</h1>
+            <span class="admin-badge">Administrator</span>
         </div>
         <div class="user-info">
-            <a href="admin-dashboard.html" class="back-btn">
-                ← Back to Dashboard
-            </a>
-            <span class="user-email">admin@sellersmedia.com</span>
-            <button class="logout-btn" onclick="adminLogout()">Logout</button>
+            <a href="admin-dashboard.html" class="back-btn">← Back to Dashboard</a>
+            <div style="position: relative;">
+                <span class="user-email" onclick="toggleAdminDropdown()">
+                    <div class="admin-avatar">A</div>
+                    admin@sellersmedia.com
+                </span>
+                <div class="admin-dropdown" id="adminDropdown">
+                    <div class="admin-dropdown-item" onclick="editAdminProfile()">
+                        👤 Edit Profile
+                    </div>
+                    <div class="admin-dropdown-item" onclick="resetAdminPassword()">
+                        🔑 Reset Password
+                    </div>
+                    <div class="admin-dropdown-item danger" onclick="adminLogout()">
+                        🚪 Logout
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     
     <div class="container">
-        <div class="tab-navigation">
-            <button class="tab-btn active" onclick="switchTab('asins')" id="asins-tab">
-                📦 ASIN Management
-            </button>
-            <button class="tab-btn" onclick="switchTab('reports')" id="reports-tab">
-                📊 Performance Reports
-            </button>
-            <button class="tab-btn" onclick="switchTab('invoices')" id="invoices-tab">
-                💼 Invoices
-            </button>
-            <button class="tab-btn" onclick="switchTab('edit')" id="edit-tab">
-                ✏️ Edit Profile
-            </button>
+        <div class="breadcrumb">
+            <a href="admin-dashboard.html">Admin Dashboard</a> > Seller Management > <span id="currentSellerBreadcrumb">Loading...</span>
         </div>
         
-        <!-- ASINs Tab -->
-        <div id="asins-content" class="tab-content active">
-            <div class="tab-header">
-                <h2>ASIN Management</h2>
-                <p style="color: #666;">Manage and oversee this seller's Amazon ASINs with full administrative privileges.</p>
+        <div class="seller-header">
+            <div class="seller-info">
+                <h2 id="sellerName">Loading Seller...</h2>
+                <div class="seller-details">
+                    <span id="sellerEmail">loading@example.com</span> | 
+                    <span id="sellerCompany">Loading Company</span> | 
+                    <span id="sellerCountry">Country</span>
+                </div>
+            </div>
+            <div class="seller-status">
+                <span class="status-badge status-active">Active</span>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab-nav">
+                <button class="tab-button active" data-tab="asins">
+                    📦 ASINs Management
+                </button>
+                <button class="tab-button" data-tab="reports">
+                    📊 Reports
+                </button>
+                <button class="tab-button" data-tab="invoices">
+                    💼 Invoices
+                </button>
+                <button class="tab-button" data-tab="edit">
+                    ✏️ Edit Profile
+                </button>
             </div>
             
-            <div class="tab-body">
-                <div class="admin-controls">
-                    <div>
-                        <strong>Admin Controls:</strong> You have full access to this seller's ASIN data with additional administrative options.
-                    </div>
-                    <div class="admin-actions">
-                        <button class="admin-btn btn-upload" onclick="uploadCSV()">
-                            📤 Upload CSV
-                        </button>
-                        <button class="admin-btn btn-suspend" onclick="suspendSeller()">
-                            ⚠️ Suspend Seller
-                        </button>
+            <!-- ASINs Tab -->
+            <div class="tab-content active" id="asins-content">
+                <div class="section-title">
+                    ASINs Management
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-success" onclick="downloadAsins()" style="background: #28a745;">📥 Download ASINs</button>
+                        <button class="btn btn-primary" onclick="uploadCsv()" style="background: #17a2b8;">📤 Upload CSV</button>
+                        <button class="btn btn-primary">➕ Add New ASIN</button>
                     </div>
                 </div>
                 
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <span class="stat-number" id="totalAsins">45</span>
+                        <div class="stat-number" id="totalAsins">45</div>
                         <div class="stat-label">Total ASINs</div>
                     </div>
                     <div class="stat-card">
-                        <span class="stat-number" id="activeAsins">42</span>
-                        <div class="stat-label">Active</div>
+                        <div class="stat-number" id="revenueLastMonth">$2,340</div>
+                        <div class="stat-label">Revenue Last Month</div>
                     </div>
                     <div class="stat-card">
-                        <span class="stat-number" id="pendingAsins">5</span>
-                        <div class="stat-label">Pending Review</div>
+                        <div class="stat-number" id="revenueAllTime">$12,450</div>
+                        <div class="stat-label">Revenue All Time</div>
                     </div>
                     <div class="stat-card">
-                        <span class="stat-number" id="avgCommission">15.2%</span>
+                        <div class="stat-number" id="avgCommission">15.2%</div>
                         <div class="stat-label">Avg Commission</div>
                     </div>
                 </div>
                 
-                <div style="padding: 3rem; text-align: center; color: #999; border: 2px dashed #ddd; border-radius: 8px;">
-                    <div style="font-size: 3rem; margin-bottom: 1rem;">📦</div>
-                    <h4>ASIN Management Interface</h4>
-                    <p>Full seller ASIN table would be displayed here with admin controls</p>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Reports Tab -->
-        <div id="reports-content" class="tab-content">
-            <div class="tab-header">
-                <h2>Performance Reports</h2>
-                <p style="color: #666;">Comprehensive performance analytics for this seller with monthly breakdowns.</p>
-                <button class="download-btn" onclick="downloadReport()" style="margin-top: 1rem;">📊 Download Report</button>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Seller ID</th>
+                            <th>Brand</th>
+                            <th>Product Title</th>
+                            <th>ASIN</th>
+                            <th>UPC/EAN/GTIN</th>
+                            <th>Product Price</th>
+                            <th>Currency</th>
+                            <th>Commission</th>
+                            <th>Category</th>
+                            <th>Custom Label1</th>
+                            <th>Date Added</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="asinsTableBody">
+                        <tr>
+                            <td><strong style="color: #667eea; font-family: monospace;">S001</strong></td>
+                            <td><strong>Amazon</strong></td>
+                            <td>Echo Dot (4th Gen) Smart Speaker</td>
+                            <td><span class="asin-badge">B08N5WRWNW</span></td>
+                            <td><span style="font-family: monospace; color: #666;">840080548685</span></td>
+                            <td>$49.99</td>
+                            <td><strong>USD</strong></td>
+                            <td>15.2%</td>
+                            <td>Electronics</td>
+                            <td><span style="background: #e3f2fd; color: #1565c0; padding: 0.2rem 0.5rem; border-radius: 8px; font-size: 0.8rem;">Smart Speaker</span></td>
+                            <td>2024-01-15</td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="editAsin('B08N5WRWNW')">Edit</button>
+                                <button class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; background: #dc3545; color: white;">Remove</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong style="color: #667eea; font-family: monospace;">S001</strong></td>
+                            <td><strong>Amazon</strong></td>
+                            <td>Fire TV Stick 4K Max</td>
+                            <td><span class="asin-badge">B08KRV7S9Q</span></td>
+                            <td><span style="font-family: monospace; color: #666;">840080548932</span></td>
+                            <td>$54.99</td>
+                            <td><strong>USD</strong></td>
+                            <td>14.8%</td>
+                            <td>Electronics</td>
+                            <td><span style="background: #f3e5f5; color: #7b1fa2; padding: 0.2rem 0.5rem; border-radius: 8px; font-size: 0.8rem;">Streaming Device</span></td>
+                            <td>2024-01-20</td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="editAsin('B08KRV7S9Q')">Edit</button>
+                                <button class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; background: #dc3545; color: white;">Remove</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong style="color: #667eea; font-family: monospace;">S001</strong></td>
+                            <td><strong>Ring</strong></td>
+                            <td>Ring Video Doorbell</td>
+                            <td><span class="asin-badge">B07XJ8C8F7</span></td>
+                            <td><span style="font-family: monospace; color: #666;">840080509471</span></td>
+                            <td>$99.99</td>
+                            <td><strong>USD</strong></td>
+                            <td>16.1%</td>
+                            <td>Security</td>
+                            <td><span style="background: #ffebee; color: #c62828; padding: 0.2rem 0.5rem; border-radius: 8px; font-size: 0.8rem;">Home Security</span></td>
+                            <td>2024-01-25</td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="editAsin('B07XJ8C8F7')">Edit</button>
+                                <button class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; background: #dc3545; color: white;">Remove</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
             
-            <div class="tab-body" id="reportContent">
-                <!-- Reports will be loaded here -->
-            </div>
-        </div>
-        
-        <!-- Invoices Tab -->
-        <div id="invoices-content" class="tab-content">
-            <div class="tab-header">
-                <h2>Invoice Management</h2>
-                <p style="color: #666;">View and manage invoices for this seller with admin privileges.</p>
-            </div>
-            
-            <div class="tab-body">
-                <div class="admin-controls">
-                    <div>
-                        <strong>Admin Invoice Controls:</strong> Full access to seller invoices with administrative capabilities.
-                    </div>
-                    <div class="admin-actions">
-                        <button class="admin-btn btn-upload" onclick="generateInvoice()">
-                            📄 Generate Invoice
-                        </button>
-                    </div>
+            <!-- Reports Tab -->
+            <div class="tab-content" id="reports-content">
+                <div class="section-title">
+                    Performance Reports
+                    <button class="btn btn-success">📥 Download Excel</button>
                 </div>
                 
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <span class="stat-number" id="totalInvoiced">$4,230</span>
-                        <div class="stat-label">Total Invoiced</div>
+                        <div class="stat-number">$12,450</div>
+                        <div class="stat-label">Total Revenue</div>
                     </div>
                     <div class="stat-card">
-                        <span class="stat-number" id="totalPaid">$3,120</span>
-                        <div class="stat-label">Total Paid</div>
+                        <div class="stat-number">$2,340</div>
+                        <div class="stat-label">This Month</div>
                     </div>
                     <div class="stat-card">
-                        <span class="stat-number" id="totalOutstanding">$890</span>
-                        <div class="stat-label">Outstanding</div>
+                        <div class="stat-number">1,247</div>
+                        <div class="stat-label">Total Clicks</div>
                     </div>
                     <div class="stat-card">
-                        <span class="stat-number" id="totalOverdue">$220</span>
-                        <div class="stat-label">Overdue Amount</div>
+                        <div class="stat-number">12.8%</div>
+                        <div class="stat-label">Conversion Rate</div>
                     </div>
                 </div>
                 
-                <div class="report-section">
-                    <div class="section-header">
-                        <h3>Invoice History</h3>
-                    </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>ASIN</th>
+                            <th>Product</th>
+                            <th>Clicks</th>
+                            <th>Orders</th>
+                            <th>Revenue</th>
+                            <th>Commission</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2024-01-15</td>
+                            <td><span class="asin-badge">B08N5WRWNW</span></td>
+                            <td>Echo Dot</td>
+                            <td>245</td>
+                            <td>12</td>
+                            <td>$588.00</td>
+                            <td>$89.38</td>
+                        </tr>
+                        <tr>
+                            <td>2024-01-16</td>
+                            <td><span class="asin-badge">B08KRV7S9Q</span></td>
+                            <td>Fire TV Stick</td>
+                            <td>189</td>
+                            <td>8</td>
+                            <td>$399.92</td>
+                            <td>$59.19</td>
+                        </tr>
+                        <tr>
+                            <td>2024-01-17</td>
+                            <td><span class="asin-badge">B07XJ8C8F7</span></td>
+                            <td>Ring Doorbell</td>
+                            <td>156</td>
+                            <td>5</td>
+                            <td>$499.95</td>
+                            <td>$80.49</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div style="margin-top: 3rem;">
+                    <h3 style="color: #2c3e50; margin-bottom: 1.5rem; font-size: 1.3rem; display: flex; justify-content: space-between; align-items: center;">
+                        Monthly Performance Summary
+                        <span style="font-size: 0.9rem; color: #666; font-weight: normal;">Last 6 Months</span>
+                    </h3>
+                    
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>Invoice #</th>
-                                <th>Date</th>
-                                <th>Description</th>
-                                <th>Amount</th>
-                                <th>Status</th>
-                                <th>Due Date</th>
-                                <th>Actions</th>
+                                <th>Month</th>
+                                <th>Total Clicks</th>
+                                <th>Total Orders</th>
+                                <th>Conversion Rate</th>
+                                <th>Total Revenue</th>
+                                <th>Total Commission</th>
+                                <th>Avg Commission %</th>
+                                <th>Performance</th>
                             </tr>
                         </thead>
-                        <tbody id="invoicesTable">
+                        <tbody>
                             <tr>
-                                <td><strong>#INV-2024-001</strong></td>
-                                <td>Dec 1, 2024</td>
-                                <td>Commission for November 2024</td>
-                                <td><strong>$1,240</strong></td>
-                                <td><span class="status-badge" style="background: #d4edda; color: #155724;">Paid</span></td>
-                                <td>Dec 31, 2024</td>
-                                <td>
-                                    <button class="admin-btn" style="font-size: 0.8rem; padding: 0.3rem 0.6rem;" onclick="viewInvoice('INV-2024-001')">View</button>
-                                </td>
+                                <td><strong>January 2024</strong></td>
+                                <td>2,847</td>
+                                <td>156</td>
+                                <td>5.48%</td>
+                                <td>$4,531.60</td>
+                                <td>$694.22</td>
+                                <td>15.3%</td>
+                                <td><span style="background: #d4edda; color: #155724; padding: 0.2rem 0.5rem; border-radius: 8px; font-size: 0.8rem;">Excellent</span></td>
                             </tr>
                             <tr>
-                                <td><strong>#INV-2024-002</strong></td>
-                                <td>Jan 1, 2024</td>
-                                <td>Commission for December 2024</td>
-                                <td><strong>$1,880</strong></td>
-                                <td><span class="status-badge" style="background: #d4edda; color: #155724;">Paid</span></td>
-                                <td>Jan 31, 2024</td>
-                                <td>
-                                    <button class="admin-btn" style="font-size: 0.8rem; padding: 0.3rem 0.6rem;" onclick="viewInvoice('INV-2024-002')">View</button>
-                                </td>
+                                <td><strong>December 2023</strong></td>
+                                <td>3,204</td>
+                                <td>178</td>
+                                <td>5.55%</td>
+                                <td>$5,247.89</td>
+                                <td>$812.45</td>
+                                <td>15.5%</td>
+                                <td><span style="background: #d4edda; color: #155724; padding: 0.2rem 0.5rem; border-radius: 8px; font-size: 0.8rem;">Excellent</span></td>
                             </tr>
                             <tr>
-                                <td><strong>#INV-2024-003</strong></td>
-                                <td>Feb 1, 2024</td>
-                                <td>Commission for January 2024</td>
-                                <td><strong>$670</strong></td>
-                                <td><span class="status-badge" style="background: #fff3cd; color: #856404;">Unpaid</span></td>
-                                <td>Feb 29, 2024</td>
-                                <td>
-                                    <button class="admin-btn" style="font-size: 0.8rem; padding: 0.3rem 0.6rem;" onclick="viewInvoice('INV-2024-003')">View</button>
-                                </td>
+                                <td><strong>November 2023</strong></td>
+                                <td>2,156</td>
+                                <td>134</td>
+                                <td>6.21%</td>
+                                <td>$3,892.40</td>
+                                <td>$567.18</td>
+                                <td>14.6%</td>
+                                <td><span style="background: #fff3cd; color: #856404; padding: 0.2rem 0.5rem; border-radius: 8px; font-size: 0.8rem;">Good</span></td>
                             </tr>
                             <tr>
-                                <td><strong>#INV-2023-012</strong></td>
-                                <td>Dec 1, 2023</td>
-                                <td>Commission for November 2023</td>
-                                <td><strong>$220</strong></td>
-                                <td><span class="status-badge" style="background: #f8d7da; color: #721c24;">Overdue</span></td>
-                                <td>Dec 31, 2023</td>
-                                <td>
-                                    <button class="admin-btn" style="font-size: 0.8rem; padding: 0.3rem 0.6rem;" onclick="viewInvoice('INV-2023-012')">View</button>
-                                </td>
+                                <td><strong>October 2023</strong></td>
+                                <td>1,987</td>
+                                <td>98</td>
+                                <td>4.93%</td>
+                                <td>$2,845.70</td>
+                                <td>$423.89</td>
+                                <td>14.9%</td>
+                                <td><span style="background: #fff3cd; color: #856404; padding: 0.2rem 0.5rem; border-radius: 8px; font-size: 0.8rem;">Good</span></td>
                             </tr>
                             <tr>
-                                <td><strong>#INV-2024-004</strong></td>
-                                <td>Mar 1, 2024</td>
-                                <td>Commission for February 2024</td>
-                                <td><strong>$2,340</strong></td>
-                                <td><span class="status-badge" style="background: #e2f3ff; color: #0c5aa6;">Processing</span></td>
-                                <td>Mar 31, 2024</td>
-                                <td>
-                                    <button class="admin-btn" style="font-size: 0.8rem; padding: 0.3rem 0.6rem;" onclick="viewInvoice('INV-2024-004')">View</button>
-                                </td>
+                                <td><strong>September 2023</strong></td>
+                                <td>1,634</td>
+                                <td>67</td>
+                                <td>4.10%</td>
+                                <td>$2,234.50</td>
+                                <td>$298.67</td>
+                                <td>13.4%</td>
+                                <td><span style="background: #f8d7da; color: #721c24; padding: 0.2rem 0.5rem; border-radius: 8px; font-size: 0.8rem;">Average</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>August 2023</strong></td>
+                                <td>1,245</td>
+                                <td>45</td>
+                                <td>3.61%</td>
+                                <td>$1,678.90</td>
+                                <td>$201.23</td>
+                                <td>12.0%</td>
+                                <td><span style="background: #f8d7da; color: #721c24; padding: 0.2rem 0.5rem; border-radius: 8px; font-size: 0.8rem;">Below Average</span></td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-        </div>
-        
-        <!-- Edit Profile Tab -->
-        <div id="edit-content" class="tab-content">
-            <div class="tab-header">
-                <h2>Seller Account Management</h2>
-                <p style="color: #666;">Edit seller information and account settings with full administrative privileges.</p>
-            </div>
             
-            <div class="tab-body">
-                <div class="admin-controls">
-                    <div>
-                        <strong>Admin Privileges:</strong> Full access to modify seller information, reset credentials, and manage account status.
+            <!-- Invoices Tab -->
+            <div class="tab-content" id="invoices-content">
+                <div class="section-title">
+                    Invoice Management
+                    <button class="btn btn-primary">📄 Generate Invoice</button>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">12</div>
+                        <div class="stat-label">Total Invoices</div>
                     </div>
-                    <div class="admin-actions">
-                        <button class="admin-btn btn-reset-password" onclick="resetPassword()">
-                            🔑 Reset Password
-                        </button>
-                        <button class="admin-btn btn-suspend" onclick="suspendAccount()">
-                            ⚠️ Suspend Account
-                        </button>
+                    <div class="stat-card">
+                        <div class="stat-number">8</div>
+                        <div class="stat-label">Paid</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">$2,150</div>
+                        <div class="stat-label">Overdue Amount</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">$1,890</div>
+                        <div class="stat-label">Next Payment</div>
                     </div>
                 </div>
                 
-                <form id="adminSellerForm">
-                    <div class="form-section">
-                        <h3>Personal Information</h3>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="firstName">First Name</label>
-                                <input type="text" id="firstName" name="firstName" value="Sarah" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="lastName">Last Name</label>
-                                <input type="text" id="lastName" name="lastName" value="Johnson" required>
-                            </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Invoice #</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Due Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>INV-2024-001</strong></td>
+                            <td>2024-01-01</td>
+                            <td>$1,250.00</td>
+                            <td><span class="status-paid">Paid</span></td>
+                            <td>2024-01-31</td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">View</button>
+                                <button class="btn btn-success" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">Download</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>INV-2024-002</strong></td>
+                            <td>2024-02-01</td>
+                            <td>$1,890.50</td>
+                            <td><span class="status-pending">Pending</span></td>
+                            <td>2024-02-28</td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">View</button>
+                                <button class="btn btn-success" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">Download</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>INV-2024-003</strong></td>
+                            <td>2024-03-01</td>
+                            <td>$2,150.75</td>
+                            <td><span class="status-overdue">Overdue</span></td>
+                            <td>2024-03-31</td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">View</button>
+                                <button class="btn btn-success" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">Download</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Edit Tab -->
+            <div class="tab-content" id="edit-content">
+                <div class="section-title">
+                    Edit Seller Profile
+                    <button class="btn btn-success">💾 Save Changes</button>
+                </div>
+                
+                <form id="sellerProfileForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="editFirstName" value="Sarah">
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="email">Email Address</label>
-                                <input type="email" id="email" name="email" value="sarah@techgadgets.com" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="phone">Phone Number</label>
-                                <input type="tel" id="phone" name="phone" value="+1-555-0123">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-section">
-                        <h3>Company Information</h3>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="company">Company Name</label>
-                                <input type="text" id="company" name="company" value="TechGadgets Pro" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="website">Website</label>
-                                <input type="url" id="website" name="website" value="https://techgadgetspro.com">
-                            </div>
-                        </div>
-                        <div class="form-group full-width">
-                            <label for="address">Business Address</label>
-                            <textarea id="address" name="address" rows="3">123 Tech Street, San Francisco, CA 94105, USA</textarea>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="country">Country</label>
-                                <select id="country" name="country" required>
-                                    <option value="US">United States</option>
-                                    <option value="UK">United Kingdom</option>
-                                    <option value="CA">Canada</option>
-                                    <option value="DE">Germany</option>
-                                    <option value="FR">France</option>
-                                    <option value="JP">Japan</option>
-                                    <option value="SE">Sweden</option>
-                                    <option value="PL">Poland</option>
-                                    <option value="BR">Brazil</option>
-                                    <option value="IN">India</option>
-                                    <option value="AU">Australia</option>
-                                    <option value="MX">Mexico</option>
-                                    <option value="IT">Italy</option>
-                                    <option value="CZ">Czech Republic</option>
-                                    <option value="RU">Russia</option>
-                                    <option value="AE">United Arab Emirates</option>
-                                    <option value="KR">South Korea</option>
-                                    <option value="DK">Denmark</option>
-                                    <option value="SA">Saudi Arabia</option>
-                                    <option value="ES">Spain</option>
-                                    <option value="BE">Belgium</option>
-                                    <option value="AT">Austria</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="taxId">Tax ID / VAT Number</label>
-                                <input type="text" id="taxId" name="taxId" value="US123456789">
-                            </div>
+                        <div class="form-group">
+                            <label class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="editLastName" value="Johnson">
                         </div>
                     </div>
                     
-                    <div class="form-section">
-                        <h3>Account Settings</h3>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="accountStatus">Account Status</label>
-                                <select id="accountStatus" name="accountStatus">
-                                    <option value="active" selected>Active</option>
-                                    <option value="suspended">Suspended</option>
-                                    <option value="pending">Pending Approval</option>
-                                    <option value="paused">Paused</option>
-                                </select>
-                            </div>
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="editEmail" value="sarah@techgadgets.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Company Name</label>
+                        <input type="text" class="form-control" id="editCompany" value="TechGadgets Pro">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Country</label>
+                            <select class="form-control" id="editCountry">
+                                <option value="US" selected>United States</option>
+                                <option value="UK">United Kingdom</option>
+                                <option value="CA">Canada</option>
+                                <option value="DE">Germany</option>
+                                <option value="FR">France</option>
+                                <option value="AU">Australia</option>
+                                <option value="JP">Japan</option>
+                            </select>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="joinDate">Join Date</label>
-                                <input type="date" id="joinDate" name="joinDate" value="2024-01-15" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label for="lastLogin">Last Login</label>
-                                <input type="datetime-local" id="lastLogin" name="lastLogin" value="2024-01-08T10:30" readonly>
-                            </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="editPhone" value="+1 (555) 123-4567">
                         </div>
                     </div>
                     
-                    <div class="admin-note">
-                        <strong>Admin Note:</strong> Changes to account status and commission tier will take effect immediately. Email notifications will be sent to the seller for major account changes.
+                    <div class="form-group">
+                        <label class="form-label">Address</label>
+                        <textarea class="form-control" id="editAddress" rows="3">123 Tech Street, San Francisco, CA 94105</textarea>
                     </div>
                     
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="cancelChanges()">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Default Commission Rate (%)</label>
+                            <input type="number" class="form-control" id="editCommission" value="15.2" min="0" max="50" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Account Status</label>
+                            <select class="form-control" id="editStatus">
+                                <option value="active" selected>Active</option>
+                                <option value="paused">Paused</option>
+                                <option value="suspended">Suspended</option>
+                                <option value="pending">Pending Approval</option>
+                            </select>
+                        </div>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-    
-    <!-- Footer -->
-    <footer style="background: #2c3e50; color: white; padding: 2rem 0; margin-top: 3rem;">
-        <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; margin-bottom: 2rem;">
-                <div>
-                    <h4 style="color: white; margin-bottom: 1rem;">Admin Panel</h4>
-                    <ul style="list-style: none; padding: 0;">
-                        <li style="margin-bottom: 0.5rem;"><a href="admin-dashboard.html" style="color: #bbb; text-decoration: none;">Dashboard</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="admin-pending-sellers.html" style="color: #bbb; text-decoration: none;">Pending Sellers</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="#" style="color: #bbb; text-decoration: none;">System Settings</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="#" style="color: #bbb; text-decoration: none;">User Management</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 style="color: white; margin-bottom: 1rem;">Seller Management</h4>
-                    <ul style="list-style: none; padding: 0;">
-                        <li style="margin-bottom: 0.5rem;"><a href="admin-dashboard.html" style="color: #bbb; text-decoration: none;">All Sellers</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="#" style="color: #bbb; text-decoration: none;">ASIN Management</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="#" style="color: #bbb; text-decoration: none;">Performance Reports</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="#" style="color: #bbb; text-decoration: none;">Commission Management</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 style="color: white; margin-bottom: 1rem;">Tools & Reports</h4>
-                    <ul style="list-style: none; padding: 0;">
-                        <li style="margin-bottom: 0.5rem;"><a href="#" style="color: #bbb; text-decoration: none;">Analytics Dashboard</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="#" style="color: #bbb; text-decoration: none;">Export Tools</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="#" style="color: #bbb; text-decoration: none;">Audit Logs</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="#" style="color: #bbb; text-decoration: none;">System Health</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 style="color: white; margin-bottom: 1rem;">Support</h4>
-                    <ul style="list-style: none; padding: 0;">
-                        <li style="margin-bottom: 0.5rem;"><a href="#" style="color: #bbb; text-decoration: none;">Admin Help</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="#" style="color: #bbb; text-decoration: none;">API Documentation</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="#" style="color: #bbb; text-decoration: none;">Contact Support</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="index.html" style="color: #bbb; text-decoration: none;">Switch to Seller View</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div style="border-top: 1px solid #34495e; padding-top: 1rem; display: flex; justify-content: space-between; align-items: center;">
-                <p style="color: #bbb; margin: 0;">© 2024 SellersMedia Admin Panel. All rights reserved.</p>
-                <p style="color: #bbb; margin: 0; font-size: 0.9rem;">Admin Version 2.1 | Last Updated: January 2024</p>
-            </div>
-        </div>
-    </footer>
 
     <script>
-        // Demo ASINs data
-        const demoAsins = [
-            { ASIN: 'B08N5WRWNW', product_name: 'Wireless Bluetooth Headphones', brand: 'TechBrand', country: 'US', currency: 'USD', product_price: 29.99, '% Commission': 15 },
-            { ASIN: 'B07XJ8C8F5', product_name: 'Smart Fitness Watch', brand: 'AudioCorp', country: 'UK', currency: 'GBP', product_price: 89.50, '% Commission': 12 },
-            { ASIN: 'B09KMVJY8P', product_name: 'Gaming Mechanical Keyboard', brand: 'WearTech', country: 'DE', currency: 'EUR', product_price: 65.00, '% Commission': 18 },
-            { ASIN: 'B07VJKQXW9', product_name: 'Portable Phone Charger', brand: 'ProtectPro', country: 'FR', currency: 'EUR', product_price: 24.99, '% Commission': 20 },
-            { ASIN: 'B08XQVYQMH', product_name: 'USB-C Cable Set', brand: 'GameGear', country: 'CA', currency: 'CAD', product_price: 19.99, '% Commission': 14 },
-            { ASIN: 'B07PDHSJ41', product_name: 'Laptop Stand Adjustable', brand: 'OfficeMax', country: 'JP', currency: 'JPY', product_price: 4999, '% Commission': 11 }
-        ];
-
-        // Tab switching functionality
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const sellerId = urlParams.get('seller') || 'S001';
+        const initialTab = urlParams.get('tab') || 'asins';
+        
+        // Demo seller data
+        const sellerData = {
+            'S001': {
+                name: 'Sarah Johnson',
+                email: 'sarah@techgadgets.com',
+                company: 'TechGadgets Pro',
+                country: 'US'
+            },
+            'S002': {
+                name: 'Michael Chen',
+                email: 'mike@smartdevices.co.uk',
+                company: 'Smart Devices Ltd',
+                country: 'UK'
+            },
+            'S003': {
+                name: 'Emma Rodriguez',
+                email: 'emma@homeessentials.ca',
+                company: 'Home Essentials Inc',
+                country: 'CA'
+            }
+        };
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSellerData();
+            initializeTabs();
+        });
+        
+        function loadSellerData() {
+            const seller = sellerData[sellerId] || sellerData['S001'];
+            
+            // Update header
+            document.getElementById('sellerName').textContent = seller.name;
+            document.getElementById('sellerEmail').textContent = seller.email;
+            document.getElementById('sellerCompany').textContent = seller.company;
+            document.getElementById('sellerCountry').textContent = seller.country;
+            document.getElementById('currentSellerBreadcrumb').textContent = seller.name;
+        }
+        
+        function initializeTabs() {
+            // Add click event listeners to all tab buttons
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    switchTab(tabName);
+                });
+            });
+            
+            // Set initial tab
+            switchTab(initialTab);
+        }
+        
         function switchTab(tabName) {
-            // Hide all tab contents
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
+            console.log('Switching to tab:', tabName);
             
-            // Remove active class from all tab buttons
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
+            // Remove active class from all tabs and content
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             
-            // Show selected tab content
-            document.getElementById(`${tabName}-content`).classList.add('active');
-            document.getElementById(`${tabName}-tab`).classList.add('active');
+            // Add active class to selected tab and content
+            const tabButton = document.querySelector(`[data-tab="${tabName}"]`);
+            const tabContent = document.getElementById(`${tabName}-content`);
             
-            // Load content for specific tabs
-            if (tabName === 'reports') {
-                generateReport();
+            if (tabButton && tabContent) {
+                tabButton.classList.add('active');
+                tabContent.classList.add('active');
+                
+                // Update URL without reload
+                const newUrl = new URL(window.location);
+                newUrl.searchParams.set('tab', tabName);
+                window.history.replaceState({}, '', newUrl);
+                
+                console.log('Tab switched successfully to:', tabName);
+            } else {
+                console.error('Tab elements not found for:', tabName);
+                console.error('Button:', tabButton);
+                console.error('Content:', tabContent);
             }
         }
-
-        // Initialize tab from URL parameter
-        function initializeTabs() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const activeTab = urlParams.get('tab') || 'asins';
-            switchTab(activeTab);
+        
+        function editAsin(asin) {
+            // ASIN data for editing
+            const asinData = {
+                'B08N5WRWNW': {
+                    asin: 'B08N5WRWNW',
+                    sellerId: 'S001',
+                    brand: 'Amazon',
+                    productTitle: 'Echo Dot (4th Gen) Smart Speaker',
+                    upcEanGtin: '840080548685',
+                    category: 'Electronics',
+                    customLabel1: 'Smart Speaker',
+                    productPrice: 49.99,
+                    currency: 'USD',
+                    commission: 15.2,
+                    dateAdded: '2024-01-15'
+                },
+                'B08KRV7S9Q': {
+                    asin: 'B08KRV7S9Q',
+                    sellerId: 'S001',
+                    brand: 'Amazon',
+                    productTitle: 'Fire TV Stick 4K Max',
+                    upcEanGtin: '840080548932',
+                    category: 'Electronics',
+                    customLabel1: 'Streaming Device',
+                    productPrice: 54.99,
+                    currency: 'USD',
+                    commission: 14.8,
+                    dateAdded: '2024-01-20'
+                },
+                'B07XJ8C8F7': {
+                    asin: 'B07XJ8C8F7',
+                    sellerId: 'S001',
+                    brand: 'Ring',
+                    productTitle: 'Ring Video Doorbell',
+                    upcEanGtin: '840080509471',
+                    category: 'Security',
+                    customLabel1: 'Home Security',
+                    productPrice: 99.99,
+                    currency: 'USD',
+                    commission: 16.1,
+                    dateAdded: '2024-01-25'
+                }
+            };
+            
+            const data = asinData[asin];
+            if (!data) {
+                alert('ASIN data not found');
+                return;
+            }
+            
+            const modal = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+                    <div style="background: white; padding: 2rem; border-radius: 8px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;">
+                        <h3 style="margin-bottom: 1.5rem; color: #2c3e50;">Edit ASIN - ${data.asin}</h3>
+                        <form id="editAsinForm">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                                <div>
+                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">ASIN:</label>
+                                    <input type="text" id="editAsinId" value="${data.asin}" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;" readonly>
+                                </div>
+                                <div>
+                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Seller ID:</label>
+                                    <input type="text" id="editSellerId" value="${data.sellerId}" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;" readonly>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-bottom: 1rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Brand:</label>
+                                <input type="text" id="editBrand" value="${data.brand}" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
+                            </div>
+                            
+                            <div style="margin-bottom: 1rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Product Title:</label>
+                                <input type="text" id="editProductTitle" value="${data.productTitle}" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
+                            </div>
+                            
+                            <div style="margin-bottom: 1rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">UPC/EAN/GTIN:</label>
+                                <input type="text" id="editUpcEanGtin" value="${data.upcEanGtin || ''}" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;" placeholder="Enter UPC, EAN, or GTIN code">
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                                <div>
+                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Currency:</label>
+                                    <select id="editCurrency" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
+                                        <option value="USD" ${data.currency === 'USD' ? 'selected' : ''}>USD</option>
+                                        <option value="EUR" ${data.currency === 'EUR' ? 'selected' : ''}>EUR</option>
+                                        <option value="GBP" ${data.currency === 'GBP' ? 'selected' : ''}>GBP</option>
+                                        <option value="CAD" ${data.currency === 'CAD' ? 'selected' : ''}>CAD</option>
+                                        <option value="JPY" ${data.currency === 'JPY' ? 'selected' : ''}>JPY</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Commission (%):</label>
+                                    <input type="number" id="editCommission" value="${data.commission}" step="0.1" min="0" max="50" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
+                                </div>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                                <div>
+                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Product Price:</label>
+                                    <input type="number" id="editProductPrice" value="${data.productPrice}" step="0.01" min="0" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
+                                </div>
+                                <div>
+                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Category:</label>
+                                    <select id="editCategory" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
+                                        <option value="Electronics" ${data.category === 'Electronics' ? 'selected' : ''}>Electronics</option>
+                                        <option value="Security" ${data.category === 'Security' ? 'selected' : ''}>Security</option>
+                                        <option value="Home & Garden" ${data.category === 'Home & Garden' ? 'selected' : ''}>Home & Garden</option>
+                                        <option value="Sports" ${data.category === 'Sports' ? 'selected' : ''}>Sports</option>
+                                        <option value="Books" ${data.category === 'Books' ? 'selected' : ''}>Books</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-bottom: 1rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Custom Label1:</label>
+                                <input type="text" id="editCustomLabel1" value="${data.customLabel1 || ''}" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;" placeholder="Enter custom label (e.g., Smart Speaker, Streaming Device)">
+                            </div>
+                            
+                            <div style="margin-bottom: 1.5rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Date Added:</label>
+                                <input type="date" id="editDateAdded" value="${data.dateAdded}" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
+                            </div>
+                            
+                            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                                <button type="button" onclick="closeAsinEditModal()" style="padding: 0.5rem 1rem; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;">Cancel</button>
+                                <button type="submit" style="padding: 0.5rem 1rem; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modal);
+            
+            document.getElementById('editAsinForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = {
+                    asin: document.getElementById('editAsinId').value,
+                    sellerId: document.getElementById('editSellerId').value,
+                    brand: document.getElementById('editBrand').value,
+                    productTitle: document.getElementById('editProductTitle').value,
+                    upcEanGtin: document.getElementById('editUpcEanGtin').value,
+                    category: document.getElementById('editCategory').value,
+                    customLabel1: document.getElementById('editCustomLabel1').value,
+                    currency: document.getElementById('editCurrency').value,
+                    productPrice: parseFloat(document.getElementById('editProductPrice').value),
+                    commission: parseFloat(document.getElementById('editCommission').value),
+                    dateAdded: document.getElementById('editDateAdded').value
+                };
+                
+                console.log('Saving ASIN data:', formData);
+                alert(`ASIN ${formData.asin} updated successfully!\n\nBrand: ${formData.brand}\nTitle: ${formData.productTitle}\nUPC/EAN/GTIN: ${formData.upcEanGtin}\nPrice: ${formData.currency} ${formData.productPrice}\nCommission: ${formData.commission}%\nCategory: ${formData.category}\nCustom Label1: ${formData.customLabel1}`);
+                closeAsinEditModal();
+            });
         }
-
-        // ASIN Management Functions
-        function uploadCSV() {
+        
+        function closeAsinEditModal() {
+            const modal = document.querySelector('[style*="position: fixed"]');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        function downloadAsins() {
+            console.log('Downloading ASINs CSV for seller:', sellerId);
+            
+            // Generate CSV content with all ASIN data
+            let csvContent = `SellersMedia ASINs Export - Seller ${sellerId}\n`;
+            csvContent += `Export Date: ${new Date().toLocaleDateString()}\n\n`;
+            csvContent += `Seller ID,Brand,Product Title,UPC/EAN/GTIN,Product Price,Currency,Commission %,Category,Custom Label1,Date Added\n`;
+            
+            // Sample ASINs data for CSV
+            const asinsCsvData = [
+                ['S001', 'Amazon', 'Echo Dot (4th Gen) Smart Speaker', '840080548685', '49.99', 'USD', '15.2', 'Electronics', 'Smart Speaker', '2024-01-15'],
+                ['S001', 'Amazon', 'Fire TV Stick 4K Max', '840080548932', '54.99', 'USD', '14.8', 'Electronics', 'Streaming Device', '2024-01-20'],
+                ['S001', 'Ring', 'Ring Video Doorbell', '840080509471', '99.99', 'USD', '16.1', 'Security', 'Home Security', '2024-01-25'],
+                ['S001', 'Apple', 'AirPods Pro (2nd Generation)', '194252721999', '249.00', 'USD', '12.5', 'Electronics', 'Audio', '2024-01-28'],
+                ['S001', 'Anker', 'PowerCore 10000 Portable Charger', '194644034603', '29.99', 'USD', '18.0', 'Electronics', 'Power Bank', '2024-02-01']
+            ];
+            
+            asinsCsvData.forEach(row => {
+                csvContent += `${row.map(cell => `"${cell}"`).join(',')}\n`;
+            });
+            
+            // Add summary
+            csvContent += `\n\nSUMMARY\n`;
+            csvContent += `Total ASINs,${asinsCsvData.length}\n`;
+            csvContent += `Average Commission,${(asinsCsvData.reduce((sum, row) => sum + parseFloat(row[6]), 0) / asinsCsvData.length).toFixed(1)}%\n`;
+            csvContent += `Export Generated,${new Date().toLocaleString()}\n`;
+            
+            // Download CSV
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `asins-export-${sellerId}-${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            console.log(`ASINs CSV downloaded for seller ${sellerId}`);
+        }
+        
+        function uploadCsv() {
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
             fileInput.accept = '.csv';
@@ -923,7 +1253,7 @@
             fileInput.onchange = function(e) {
                 const file = e.target.files[0];
                 if (file) {
-                    showUploadConfirmation(file);
+                    showCsvUploadModal(file);
                 }
             };
             
@@ -932,51 +1262,55 @@
             document.body.removeChild(fileInput);
         }
         
-        function showUploadConfirmation(file) {
+        function showCsvUploadModal(file) {
             const modal = `
                 <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center;">
-                    <div style="background: white; padding: 2rem; border-radius: 8px; max-width: 500px; width: 90%;">
-                        <h3 style="margin-bottom: 1.5rem; color: #2c3e50;">CSV Upload Confirmation</h3>
+                    <div style="background: white; padding: 2rem; border-radius: 8px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;">
+                        <h3 style="margin-bottom: 1.5rem; color: #2c3e50;">Upload ASINs CSV - Seller ${sellerId}</h3>
+                        
                         <div style="background: #e8f5e8; padding: 1rem; border-radius: 6px; margin-bottom: 1.5rem;">
                             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
-                                <span style="color: #28a745;">✓</span>
+                                <span style="color: #28a745; font-size: 1.2rem;">✓</span>
                                 <strong>File Selected:</strong> ${file.name}
                             </div>
                             <div style="font-size: 0.9rem; color: #666;">
-                                Size: ${(file.size / 1024).toFixed(1)} KB
+                                Size: ${(file.size / 1024).toFixed(1)} KB | Type: ${file.type || 'CSV'}
                             </div>
                         </div>
                         
                         <div style="margin-bottom: 2rem;">
-                            <h4 style="margin-bottom: 1rem; color: #2c3e50;">Admin Upload Options:</h4>
+                            <h4 style="margin-bottom: 1rem; color: #2c3e50;">CSV Format Requirements:</h4>
+                            <div style="background: #f8f9fa; padding: 1rem; border-radius: 4px; font-size: 0.9rem; margin-bottom: 1rem;">
+                                <strong>Required Columns:</strong><br>
+                                Seller ID, Brand, Product Title, UPC/EAN/GTIN, Product Price, Currency, Commission %, Category, Custom Label1, Date Added
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 2rem;">
+                            <h4 style="margin-bottom: 1rem; color: #2c3e50;">Upload Options:</h4>
                             <div style="display: flex; flex-direction: column; gap: 1rem;">
-                                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
-                                    <input type="radio" name="uploadMode" value="replace" checked style="margin: 0;">
+                                <label style="display: flex; align-items: flex-start; gap: 0.5rem; cursor: pointer; padding: 1rem; border: 2px solid #ddd; border-radius: 6px; transition: all 0.3s;" onmouseover="this.style.borderColor='#667eea'" onmouseout="this.style.borderColor='#ddd'">
+                                    <input type="radio" name="uploadMode" value="replace" checked style="margin-top: 0.2rem;">
                                     <div>
-                                        <strong>Replace All ASINs</strong>
-                                        <div style="font-size: 0.8rem; color: #666;">Remove all existing ASINs and upload new ones</div>
+                                        <strong style="color: #dc3545;">🔄 Replace All ASINs</strong>
+                                        <div style="font-size: 0.85rem; color: #666; margin-top: 0.3rem;">⚠️ Remove all existing ASINs for this seller and upload new ones from CSV</div>
+                                        <div style="font-size: 0.8rem; color: #999; margin-top: 0.2rem;">This action cannot be undone</div>
                                     </div>
                                 </label>
-                                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
-                                    <input type="radio" name="uploadMode" value="add" style="margin: 0;">
+                                <label style="display: flex; align-items: flex-start; gap: 0.5rem; cursor: pointer; padding: 1rem; border: 2px solid #ddd; border-radius: 6px; transition: all 0.3s;" onmouseover="this.style.borderColor='#667eea'" onmouseout="this.style.borderColor='#ddd'">
+                                    <input type="radio" name="uploadMode" value="add" style="margin-top: 0.2rem;">
                                     <div>
-                                        <strong>Add New ASINs</strong>
-                                        <div style="font-size: 0.8rem; color: #666;">Keep existing ASINs and add new ones (skip duplicates)</div>
-                                    </div>
-                                </label>
-                                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
-                                    <input type="radio" name="uploadMode" value="update" style="margin: 0;">
-                                    <div>
-                                        <strong>Update Existing ASINs</strong>
-                                        <div style="font-size: 0.8rem; color: #666;">Update existing ASINs with new data, add non-existing ones</div>
+                                        <strong style="color: #28a745;">➕ Add New ASINs</strong>
+                                        <div style="font-size: 0.85rem; color: #666; margin-top: 0.3rem;">Keep existing ASINs and add new ones from CSV (duplicates will be skipped)</div>
+                                        <div style="font-size: 0.8rem; color: #999; margin-top: 0.2rem;">Safe option - no data loss</div>
                                     </div>
                                 </label>
                             </div>
                         </div>
                         
                         <div style="display: flex; gap: 1rem; justify-content: flex-end;">
-                            <button onclick="closeUploadModal()" style="padding: 0.5rem 1rem; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;">Cancel</button>
-                            <button onclick="processCSVUpload('${file.name}')" style="padding: 0.5rem 1rem; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">Upload ASINs</button>
+                            <button type="button" onclick="closeCsvUploadModal()" style="padding: 0.5rem 1rem; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;">Cancel</button>
+                            <button type="button" onclick="processCsvUpload('${file.name}')" style="padding: 0.5rem 1.5rem; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 500;">Upload ASINs</button>
                         </div>
                     </div>
                 </div>
@@ -985,520 +1319,193 @@
             document.body.insertAdjacentHTML('beforeend', modal);
         }
         
-        function closeUploadModal() {
-            const modal = document.querySelector('[style*="position: fixed"]');
+        function closeCsvUploadModal() {
+            const modal = document.querySelector('[style*="position: fixed"][style*="rgba(0,0,0,0.5)"]');
             if (modal) {
                 modal.remove();
             }
         }
         
-        function processCSVUpload(fileName) {
+        function processCsvUpload(fileName) {
             const selectedMode = document.querySelector('input[name="uploadMode"]:checked').value;
             let modeText = '';
             let resultText = '';
+            let newTotalAsins = 45; // current total
             
             switch(selectedMode) {
                 case 'replace':
-                    modeText = 'Replace All';
-                    resultText = 'All existing ASINs have been removed and 23 new ASINs have been uploaded.';
+                    modeText = 'Replace All ASINs';
+                    resultText = 'All existing ASINs have been removed and 23 new ASINs have been uploaded from CSV.';
+                    newTotalAsins = 23;
                     document.getElementById('totalAsins').textContent = '23';
-                    document.getElementById('activeAsins').textContent = '20';
-                    document.getElementById('pendingAsins').textContent = '3';
+                    document.getElementById('revenueLastMonth').textContent = '$1,890';
+                    document.getElementById('revenueAllTime').textContent = '$8,450';
                     break;
                 case 'add':
-                    modeText = 'Add New';
-                    resultText = '15 new ASINs have been added (8 duplicates were skipped).';
-                    document.getElementById('totalAsins').textContent = '60';
-                    document.getElementById('activeAsins').textContent = '57';
-                    document.getElementById('pendingAsins').textContent = '3';
-                    break;
-                case 'update':
-                    modeText = 'Update Existing';
-                    resultText = '18 existing ASINs updated, 5 new ASINs added.';
-                    document.getElementById('totalAsins').textContent = '50';
-                    document.getElementById('activeAsins').textContent = '47';
-                    document.getElementById('pendingAsins').textContent = '3';
+                    modeText = 'Add New ASINs';
+                    resultText = '18 new ASINs have been added from CSV (5 duplicates were skipped). Existing ASINs remain unchanged.';
+                    newTotalAsins = 45 + 18;
+                    document.getElementById('totalAsins').textContent = '63';
+                    document.getElementById('revenueLastMonth').textContent = '$2,890';
+                    document.getElementById('revenueAllTime').textContent = '$15,670';
                     break;
             }
             
-            closeUploadModal();
+            closeCsvUploadModal();
             
             setTimeout(() => {
-                alert(`CSV Upload Complete!\n\nFile: ${fileName}\nMode: ${modeText}\n\n${resultText}\n\nAll changes have been logged for audit purposes.`);
+                alert(`CSV Upload Complete!\n\nFile: ${fileName}\nSeller: ${sellerId}\nMode: ${modeText}\n\n${resultText}\n\nTotal ASINs: ${newTotalAsins}\nAll changes have been logged for audit purposes.`);
             }, 300);
         }
         
-        function suspendSeller() {
-            if (confirm('Are you sure you want to suspend this seller? This will deactivate all their ASINs.')) {
-                alert('Seller has been suspended. All ASINs are now inactive.');
-            }
-        }
-
-        // Reports Functions
-        function generateReportData() {
-            return demoAsins.map(asin => {
-                const baseRevenue = Math.random() * 500 + 50;
-                const conversions = Math.floor(Math.random() * 50) + 5;
-                const commissionRate = asin['% Commission'] || 15;
-                const productPrice = asin.product_price || 25;
-                
-                const revenueUSD = baseRevenue * (commissionRate / 100);
-                const commission = productPrice * (commissionRate / 100) * conversions;
-                
-                const exchangeRates = { USD: 1, GBP: 0.8, EUR: 0.85, CAD: 1.25, JPY: 110 };
-                const rate = exchangeRates[asin.currency] || 1;
-                const revenueLocal = revenueUSD * rate;
-                
-                const currencySymbols = { USD: '$', GBP: '£', EUR: '€', CAD: '$', JPY: '¥' };
-                const currencySymbol = currencySymbols[asin.currency] || '$';
-                
-                return {
-                    asin: asin.ASIN,
-                    market: asin.country,
-                    rate: commissionRate,
-                    revenueUSD: revenueUSD,
-                    revenueLocal: revenueLocal,
-                    commission: commission,
-                    conversions: conversions,
-                    currencySymbol: currencySymbol,
-                    currency: asin.currency || 'USD'
-                };
+        function toggleAdminDropdown() {
+            const dropdown = document.getElementById('adminDropdown');
+            dropdown.classList.toggle('show');
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('.user-email') && !event.target.closest('.admin-dropdown')) {
+                    dropdown.classList.remove('show');
+                }
             });
         }
-
-        function generateReport() {
-            const reportData = generateReportData();
+        
+        function editAdminProfile() {
+            const dropdown = document.getElementById('adminDropdown');
+            dropdown.classList.remove('show');
             
-            const totalRevenueUSD = reportData.reduce((sum, item) => sum + item.revenueUSD, 0);
-            const totalCommission = reportData.reduce((sum, item) => sum + item.commission, 0);
-            const totalConversions = reportData.reduce((sum, item) => sum + item.conversions, 0);
-            const avgCommissionPercent = totalRevenueUSD > 0 ? (totalCommission / totalRevenueUSD) * 100 : 0;
+            // Create modal for profile editing
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.5); z-index: 2000; display: flex;
+                justify-content: center; align-items: center;
+            `;
             
-            const reportHTML = `
-                <div class="summary-cards">
-                    <div class="summary-card highlight">
-                        <span class="summary-number">$${totalRevenueUSD.toFixed(0)}</span>
-                        <div class="summary-label">Total Revenue (USD)</div>
-                    </div>
-                    <div class="summary-card">
-                        <span class="summary-number">$${totalCommission.toFixed(0)}</span>
-                        <div class="summary-label">Total Commission</div>
-                    </div>
-                    <div class="summary-card">
-                        <span class="summary-number">${avgCommissionPercent.toFixed(1)}%</span>
-                        <div class="summary-label">Average Commission %</div>
-                    </div>
-                    <div class="summary-card">
-                        <span class="summary-number">${totalConversions}</span>
-                        <div class="summary-label">Conversions</div>
-                    </div>
-                    <div class="summary-card">
-                        <span class="summary-number">${reportData.length}</span>
-                        <div class="summary-label">Active ASINs</div>
-                    </div>
-                </div>
-                
-                <div class="report-section">
-                    <div class="section-header">
-                        <h3>ASIN Performance Breakdown</h3>
-                    </div>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Seller ID</th>
-                                <th>ASIN</th>
-                                <th>Market</th>
-                                <th>Commission %</th>
-                                <th>Conversions</th>
-                                <th>Commission (USD)</th>
-                                <th>Revenue (USD)</th>
-                                <th>Revenue (Local Currency)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${reportData.map(item => `
-                                <tr>
-                                    <td><strong>${getCurrentSellerId()}</strong></td>
-                                    <td><strong>${item.asin}</strong></td>
-                                    <td><span class="status-badge status-active">${item.market}</span></td>
-                                    <td>${item.rate}%</td>
-                                    <td>${item.conversions}</td>
-                                    <td><strong>$${item.commission.toFixed(2)}</strong></td>
-                                    <td><strong>$${item.revenueUSD.toFixed(2)}</strong></td>
-                                    <td><strong>${item.currencySymbol}${item.revenueLocal.toFixed(2)}</strong></td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
+            modal.innerHTML = `
+                <div style="background: white; padding: 2rem; border-radius: 8px; width: 90%; max-width: 500px;">
+                    <h3 style="margin-bottom: 1.5rem; color: #2c3e50;">Edit Admin Profile</h3>
+                    <form id="adminProfileForm">
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Full Name</label>
+                            <input type="text" id="adminName" value="Admin User" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Email</label>
+                            <input type="email" id="adminEmail" value="admin@sellersmedia.com" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Phone</label>
+                            <input type="tel" id="adminPhone" value="+1 (555) 123-4567" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Department</label>
+                            <select id="adminDepartment" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
+                                <option value="operations">Operations</option>
+                                <option value="technical" selected>Technical</option>
+                                <option value="management">Management</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                            <button type="button" onclick="closeModal(this)" style="padding: 0.75rem 1.5rem; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;">Cancel</button>
+                            <button type="submit" style="padding: 0.75rem 1.5rem; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">Save Changes</button>
+                        </div>
+                    </form>
                 </div>
             `;
             
-            document.getElementById('reportContent').innerHTML = reportHTML;
-        }
-
-        function downloadReport() {
-            console.log('Generating detailed Excel report for seller');
+            document.body.appendChild(modal);
             
-            // Get current seller information
-            const urlParams = new URLSearchParams(window.location.search);
-            const sellerId = urlParams.get('seller') || 'S001';
-            
-            // Generate CSV content similar to seller reports
-            const lastMonth = new Date();
-            lastMonth.setMonth(lastMonth.getMonth() - 1);
-            const year = lastMonth.getFullYear();
-            const month = lastMonth.getMonth();
-            const monthNames = ["January", "February", "March", "April", "May", "June",
-                "July", "August", "September", "October", "November", "December"];
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            
-            let csvContent = `SellersMedia Admin Report - Seller ${sellerId}\n`;
-            csvContent += `Report Period: ${monthNames[month]} ${year}\n`;
-            csvContent += `Generated: ${new Date().toLocaleDateString()}\n\n`;
-            csvContent += `DAILY SALES BREAKDOWN\n`;
-            csvContent += `Date,Product Name,Brand,ASIN,Market,Currency,Units Sold,Unit Price,Commission Rate,Revenue (Local),Commission (Local),Revenue (USD),Commission (USD)\n`;
-            
-            let totalRevenueUSD = 0;
-            let totalCommissionUSD = 0;
-            const productTotals = new Map();
-            
-            demoAsins.forEach(asin => {
-                const productPrice = asin.product_price || 25;
-                const commissionRate = asin['% Commission'] || 15;
-                const currency = asin.currency || 'USD';
-                
-                const exchangeRates = { USD: 1, GBP: 0.8, EUR: 0.85, CAD: 1.25, JPY: 110 };
-                const currencySymbols = { USD: '$', GBP: '£', EUR: '€', CAD: '$', JPY: '¥' };
-                const rate = exchangeRates[currency] || 1;
-                const currencySymbol = currencySymbols[currency] || '$';
-                
-                let productTotalLocal = 0;
-                let productTotalUSD = 0;
-                let productCommissionLocal = 0;
-                let productCommissionUSD = 0;
-                
-                // Generate daily sales for random days in the month
-                const activeDays = Math.floor(Math.random() * 20) + 5; // 5-25 active days
-                const salesDays = [];
-                
-                for (let i = 0; i < activeDays; i++) {
-                    const randomDay = Math.floor(Math.random() * daysInMonth) + 1;
-                    if (!salesDays.includes(randomDay)) {
-                        salesDays.push(randomDay);
-                    }
-                }
-                
-                salesDays.sort((a, b) => a - b).forEach(day => {
-                    const unitsSold = Math.floor(Math.random() * 15) + 1; // 1-15 units per day
-                    const dailyRevenueLocal = unitsSold * productPrice;
-                    const dailyCommissionLocal = dailyRevenueLocal * (commissionRate / 100);
-                    const dailyRevenueUSD = dailyRevenueLocal / rate;
-                    const dailyCommissionUSD = dailyCommissionLocal / rate;
-                    
-                    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                    
-                    csvContent += `${dateStr},"${asin.product_name || 'N/A'}","${asin.brand || 'N/A'}",${asin.ASIN},${asin.country},${currency},${unitsSold},${currencySymbol}${productPrice.toFixed(2)},${commissionRate}%,${currencySymbol}${dailyRevenueLocal.toFixed(2)},${currencySymbol}${dailyCommissionLocal.toFixed(2)},$${dailyRevenueUSD.toFixed(2)},$${dailyCommissionUSD.toFixed(2)}\n`;
-                    
-                    productTotalLocal += dailyRevenueLocal;
-                    productTotalUSD += dailyRevenueUSD;
-                    productCommissionLocal += dailyCommissionLocal;
-                    productCommissionUSD += dailyCommissionUSD;
-                    totalRevenueUSD += dailyRevenueUSD;
-                    totalCommissionUSD += dailyCommissionUSD;
-                });
-                
-                productTotals.set(asin.ASIN, {
-                    product: asin.product_name || 'N/A',
-                    brand: asin.brand || 'N/A',
-                    country: asin.country || 'N/A',
-                    currency: currency,
-                    currencySymbol: currencySymbol,
-                    totalLocal: productTotalLocal,
-                    totalUSD: productTotalUSD,
-                    commissionLocal: productCommissionLocal,
-                    commissionUSD: productCommissionUSD
-                });
+            // Handle form submission
+            document.getElementById('adminProfileForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('Admin profile updated successfully!\\n\\nIn production, this would update the admin profile in the database.');
+                document.body.removeChild(modal);
             });
             
-            // Add product summary section
-            csvContent += `\n\nPRODUCT MONTHLY TOTALS\n`;
-            csvContent += `Product,Brand,ASIN,Country,Currency,Monthly Revenue (Local),Monthly Commission (Local),Monthly Revenue (USD),Monthly Commission (USD)\n`;
+            // Close modal when clicking background
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
+                }
+            });
+        }
+        
+        function resetAdminPassword() {
+            const dropdown = document.getElementById('adminDropdown');
+            dropdown.classList.remove('show');
             
-            productTotals.forEach((totals, asin) => {
-                csvContent += `"${totals.product}","${totals.brand}",${asin},${totals.country},${totals.currency},${totals.currencySymbol}${totals.totalLocal.toFixed(2)},${totals.currencySymbol}${totals.commissionLocal.toFixed(2)},$${totals.totalUSD.toFixed(2)},$${totals.commissionUSD.toFixed(2)}\n`;
+            // Create password reset modal
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.5); z-index: 2000; display: flex;
+                justify-content: center; align-items: center;
+            `;
+            
+            modal.innerHTML = `
+                <div style="background: white; padding: 2rem; border-radius: 8px; width: 90%; max-width: 400px;">
+                    <h3 style="margin-bottom: 1.5rem; color: #2c3e50;">Reset Admin Password</h3>
+                    <form id="passwordResetForm">
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Current Password</label>
+                            <input type="password" id="currentPassword" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;" required>
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">New Password</label>
+                            <input type="password" id="newPassword" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;" required>
+                        </div>
+                        <div style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Confirm New Password</label>
+                            <input type="password" id="confirmPassword" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;" required>
+                        </div>
+                        <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                            <button type="button" onclick="closeModal(this)" style="padding: 0.75rem 1.5rem; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;">Cancel</button>
+                            <button type="submit" style="padding: 0.75rem 1.5rem; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer;">Reset Password</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Handle form submission
+            document.getElementById('passwordResetForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                
+                if (newPassword !== confirmPassword) {
+                    alert('New passwords do not match!');
+                    return;
+                }
+                
+                if (newPassword.length < 8) {
+                    alert('Password must be at least 8 characters long!');
+                    return;
+                }
+                
+                alert('Admin password reset successfully!\\n\\nIn production, this would update the password in the database and send a confirmation email.');
+                document.body.removeChild(modal);
             });
             
-            // Add overall summary
-            csvContent += `\n\nMONTHLY SUMMARY - SELLER ${sellerId}\n`;
-            csvContent += `Metric,Amount (USD)\n`;
-            csvContent += `Total Revenue,$${totalRevenueUSD.toFixed(2)}\n`;
-            csvContent += `Total Commission,$${totalCommissionUSD.toFixed(2)}\n`;
-            csvContent += `Active Products,${demoAsins.length}\n`;
-            csvContent += `Report Period,${monthNames[month]} 1-${daysInMonth} ${year}\n`;
-            csvContent += `Seller ID,${sellerId}\n`;
-            
-            // Download CSV
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `admin-seller-report-${sellerId}-${monthNames[month].toLowerCase()}-${year}.csv`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-            
-            console.log(`Generated detailed admin report for seller ${sellerId} - ${monthNames[month]} ${year}`);
-        }
-
-        // Invoice Management Functions
-        function generateInvoice() {
-            if (confirm('Generate a new invoice for this seller?\n\nThis will create an invoice for the current month\'s commission.')) {
-                alert('New invoice generated successfully!\n\nInvoice #INV-2024-005\nAmount: $2,340\nDue Date: Next month end\n\nInvoice has been emailed to the seller.');
-                
-                // Add new invoice to table (in real app, would reload from server)
-                const newRow = `
-                    <tr style="background: #f0f8ff;">
-                        <td><strong>#INV-2024-005</strong></td>
-                        <td>Today</td>
-                        <td>Commission for Current Month</td>
-                        <td><strong>$2,340</strong></td>
-                        <td><span class="status-badge" style="background: #e2f3ff; color: #0c5aa6;">Processing</span></td>
-                        <td>Next Month End</td>
-                        <td>
-                            <button class="admin-btn" style="font-size: 0.8rem; padding: 0.3rem 0.6rem;" onclick="viewInvoice('INV-2024-005')">View</button>
-                        </td>
-                    </tr>
-                `;
-                document.getElementById('invoicesTable').insertAdjacentHTML('afterbegin', newRow);
-            }
-        }
-
-
-        function viewInvoice(invoiceId) {
-            const invoiceDetails = {
-                'INV-2024-001': {
-                    date: 'December 1, 2024',
-                    description: 'Commission for November 2024',
-                    amount: '$1,240',
-                    status: 'Paid',
-                    dueDate: 'December 31, 2024',
-                    items: [
-                        'Electronics Category: $450 commission',
-                        'Home & Garden Category: $320 commission',
-                        'Technology Category: $470 commission'
-                    ]
-                },
-                'INV-2024-002': {
-                    date: 'January 1, 2024',
-                    description: 'Commission for December 2024',
-                    amount: '$1,880',
-                    status: 'Paid',
-                    dueDate: 'January 31, 2024',
-                    items: [
-                        'Electronics Category: $670 commission',
-                        'Home & Garden Category: $540 commission',
-                        'Technology Category: $670 commission'
-                    ]
-                },
-                'INV-2024-003': {
-                    date: 'February 1, 2024',
-                    description: 'Commission for January 2024',
-                    amount: '$670',
-                    status: 'Unpaid',
-                    dueDate: 'February 29, 2024',
-                    items: [
-                        'Electronics Category: $280 commission',
-                        'Home & Garden Category: $180 commission',
-                        'Technology Category: $210 commission'
-                    ]
+            // Close modal when clicking background
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
                 }
-            };
-
-            const invoice = invoiceDetails[invoiceId] || {
-                date: 'Unknown',
-                description: 'Invoice details',
-                amount: '$0',
-                status: 'Unknown',
-                dueDate: 'Unknown',
-                items: ['No details available']
-            };
-
-            alert(`Invoice Details: ${invoiceId}\n\n` +
-                  `Date: ${invoice.date}\n` +
-                  `Description: ${invoice.description}\n` +
-                  `Amount: ${invoice.amount}\n` +
-                  `Status: ${invoice.status}\n` +
-                  `Due Date: ${invoice.dueDate}\n\n` +
-                  `Breakdown:\n${invoice.items.join('\n')}\n\n` +
-                  `Payment Terms: NET-30\nSeller: ${document.getElementById('currentSeller').textContent}`);
-        }
-
-        // Edit Profile Functions
-        function resetPassword() {
-            if (confirm('Reset password for this seller? A new temporary password will be generated and emailed to them.')) {
-                alert('Password reset successfully. Temporary password has been sent to the seller.');
-            }
+            });
         }
         
-        
-        function suspendAccount() {
-            if (confirm('Suspend this seller account? This will:\n\n• Deactivate all ASINs\n• Block login access\n• Pause commission payments\n\nThis action can be reversed.')) {
-                document.getElementById('accountStatus').value = 'suspended';
-                alert('Account has been suspended. The seller will be notified via email.');
-            }
+        function closeModal(button) {
+            const modal = button.closest('div[style*="position: fixed"]').parentElement;
+            document.body.removeChild(modal);
         }
         
-        function cancelChanges() {
-            if (confirm('Discard all changes and return to dashboard?')) {
-                window.location.href = 'admin-dashboard.html';
-            }
-        }
-
-        // Complete seller database with detailed information
-        const sellerDatabase = {
-            'S001': { 
-                firstName: 'Sarah', lastName: 'Johnson', 
-                email: 'sarah@techgadgets.com', phone: '+1-555-0123',
-                company: 'TechGadgets Pro', website: 'https://techgadgetspro.com',
-                address: '123 Tech Street, San Francisco, CA 94105, USA',
-                country: 'US', taxId: 'US123456789',
-                accountStatus: 'active', commissionTier: 'premium',
-                joinDate: '2024-01-15', lastLogin: '2024-01-08T10:30'
-            },
-            'S002': { 
-                firstName: 'Michael', lastName: 'Chen', 
-                email: 'mike@smartdevices.co.uk', phone: '+44-20-7946-0958',
-                company: 'Smart Devices Ltd', website: 'https://smartdevices.co.uk',
-                address: '45 Innovation Drive, London, SW1A 1AA, UK',
-                country: 'UK', taxId: 'GB123456789',
-                accountStatus: 'active', commissionTier: 'standard',
-                joinDate: '2023-11-22', lastLogin: '2024-01-07T14:20'
-            },
-            'S003': { 
-                firstName: 'Emma', lastName: 'Rodriguez', 
-                email: 'emma@homeessentials.ca', phone: '+1-416-555-0987',
-                company: 'Home Essentials Inc', website: 'https://homeessentials.ca',
-                address: '789 Maple Avenue, Toronto, ON M5V 3A8, Canada',
-                country: 'CA', taxId: 'CA987654321',
-                accountStatus: 'active', commissionTier: 'premium',
-                joinDate: '2023-09-10', lastLogin: '2024-01-06T09:15'
-            },
-            'S004': { 
-                firstName: 'Hans', lastName: 'Mueller', 
-                email: 'hans@qualitytools.de', phone: '+49-30-12345678',
-                company: 'Quality Tools GmbH', website: 'https://qualitytools.de',
-                address: 'Industriestraße 42, 10115 Berlin, Germany',
-                country: 'DE', taxId: 'DE123456789',
-                accountStatus: 'active', commissionTier: 'enterprise',
-                joinDate: '2023-08-03', lastLogin: '2024-01-05T16:45'
-            },
-            'S005': { 
-                firstName: 'Marie', lastName: 'Dubois', 
-                email: 'marie@luxurygoods.fr', phone: '+33-1-42-86-83-00',
-                company: 'Luxury Goods SARL', website: 'https://luxurygoods.fr',
-                address: '12 Rue de la Paix, 75002 Paris, France',
-                country: 'FR', taxId: 'FR123456789',
-                accountStatus: 'active', commissionTier: 'premium',
-                joinDate: '2023-12-01', lastLogin: '2024-01-04T11:30'
-            },
-            'S006': { 
-                firstName: 'James', lastName: 'Wilson', 
-                email: 'james@outdoorgear.com', phone: '+1-303-555-0456',
-                company: 'Outdoor Gear Co', website: 'https://outdoorgear.com',
-                address: '321 Mountain View Blvd, Denver, CO 80202, USA',
-                country: 'US', taxId: 'US987654321',
-                accountStatus: 'active', commissionTier: 'standard',
-                joinDate: '2023-10-15', lastLogin: '2024-01-03T08:20'
-            },
-            'S007': { 
-                firstName: 'Anna', lastName: 'Kowalski', 
-                email: 'anna@homecomfort.pl', phone: '+48-22-123-4567',
-                company: 'Home Comfort Poland', website: 'https://homecomfort.pl',
-                address: 'ul. Nowa 15, 00-001 Warsaw, Poland',
-                country: 'PL', taxId: 'PL123456789',
-                accountStatus: 'active', commissionTier: 'standard',
-                joinDate: '2023-07-20', lastLogin: '2024-01-02T13:10'
-            },
-            'S008': { 
-                firstName: 'Roberto', lastName: 'Silva', 
-                email: 'roberto@techbrasil.br', phone: '+55-11-9876-5432',
-                company: 'Tech Brasil Ltda', website: 'https://techbrasil.com.br',
-                address: 'Av. Paulista 1000, São Paulo, SP 01310-100, Brazil',
-                country: 'BR', taxId: 'BR123456789',
-                accountStatus: 'active', commissionTier: 'premium',
-                joinDate: '2023-06-12', lastLogin: '2024-01-01T19:45'
-            },
-            'S009': { 
-                firstName: 'Yuki', lastName: 'Tanaka', 
-                email: 'yuki@gadgetjapan.jp', phone: '+81-3-1234-5678',
-                company: 'Gadget Japan KK', website: 'https://gadgetjapan.co.jp',
-                address: '1-2-3 Shibuya, Tokyo 150-0002, Japan',
-                country: 'JP', taxId: 'JP123456789',
-                accountStatus: 'active', commissionTier: 'standard',
-                joinDate: '2023-05-08', lastLogin: '2023-12-30T12:25'
-            },
-            'S010': { 
-                firstName: 'Sofia', lastName: 'Andersson', 
-                email: 'sofia@nordictech.se', phone: '+46-8-123-456-78',
-                company: 'Nordic Tech AB', website: 'https://nordictech.se',
-                address: 'Storgatan 25, 111 51 Stockholm, Sweden',
-                country: 'SE', taxId: 'SE123456789',
-                accountStatus: 'active', commissionTier: 'premium',
-                joinDate: '2023-04-18', lastLogin: '2023-12-29T15:40'
-            }
-        };
-        
-        // Get seller info from URL params
-        function getCurrentSeller() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const sellerId = urlParams.get('seller') || 'S001';
-            
-            const seller = sellerDatabase[sellerId] || sellerDatabase['S001'];
-            document.getElementById('currentSeller').textContent = `${seller.firstName} ${seller.lastName} (${seller.company})`;
-            
-            // Populate form fields
-            populateFormFields(seller);
-        }
-        
-        // Populate form fields with seller data
-        function populateFormFields(seller) {
-            document.getElementById('firstName').value = seller.firstName;
-            document.getElementById('lastName').value = seller.lastName;
-            document.getElementById('email').value = seller.email;
-            document.getElementById('phone').value = seller.phone;
-            document.getElementById('company').value = seller.company;
-            document.getElementById('website').value = seller.website;
-            document.getElementById('address').value = seller.address;
-            document.getElementById('country').value = seller.country;
-            document.getElementById('taxId').value = seller.taxId;
-            document.getElementById('accountStatus').value = seller.accountStatus;
-            document.getElementById('commissionTier').value = seller.commissionTier;
-            document.getElementById('joinDate').value = seller.joinDate;
-            document.getElementById('lastLogin').value = seller.lastLogin;
-        }
-        
-        // Get current seller ID
-        function getCurrentSellerId() {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get('seller') || 'S001';
-        }
-
-        // Form submission
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('adminSellerForm');
-            if (form) {
-                form.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    if (confirm('Save all changes to seller profile?')) {
-                        alert('Seller profile updated successfully. Changes have been logged and the seller will be notified of significant changes.');
-                    }
-                });
-            }
-        });
-
-        // Admin logout function
         function adminLogout() {
+            const dropdown = document.getElementById('adminDropdown');
+            if (dropdown) dropdown.classList.remove('show');
+            
             // Clear any admin session data
             localStorage.removeItem('adminSession');
             localStorage.removeItem('userSession');
@@ -1513,15 +1520,9 @@
                 });
             }
             
-            // Redirect to main login page
+            // Redirect to main login page in logged out state
             window.location.replace('index.html');
         }
-
-        // Initialize page
-        document.addEventListener('DOMContentLoaded', function() {
-            getCurrentSeller();
-            initializeTabs();
-        });
     </script>
 </body>
 </html>
