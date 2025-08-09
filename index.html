@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SellersMedia - Amazon Seller Promotion Network</title>
     
-    <!-- Supabase Client -->
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <script src="config.js"></script>
+    <!-- Demo Configuration (Replace with config.js for production) -->
+    <script src="demo-config.js"></script>
     
     <style>
         * {
@@ -212,6 +211,17 @@
                     <p style="color: #666; margin-bottom: 1rem;">New to SellersMedia?</p>
                     <a href="signup.html" class="btn" style="display: inline-block; text-decoration: none; background: #6c757d;">Create Account</a>
                 </div>
+                
+                <div style="margin-top: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 6px; border-left: 4px solid #28a745;">
+                    <h4 style="color: #28a745; margin-bottom: 0.5rem; font-size: 0.9rem;">🎭 DEMO CREDENTIALS</h4>
+                    <p style="margin: 0.3rem 0; font-size: 0.8rem; color: #666;">
+                        <strong>Seller:</strong> seller@demo.com / seller123<br>
+                        <strong>Admin:</strong> admin@demo.com / admin123
+                    </p>
+                    <p style="font-size: 0.7rem; color: #666; margin-top: 0.5rem;">
+                        <em>No real signup needed - works offline!</em>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
@@ -219,13 +229,15 @@
     <script>
         // Check if user is already logged in
         document.addEventListener('DOMContentLoaded', async function() {
-            // Wait for Supabase to load
-            setTimeout(async () => {
-                const isLoggedIn = await auth.isLoggedIn();
-                if (isLoggedIn) {
+            const isLoggedIn = await auth.isLoggedIn();
+            if (isLoggedIn) {
+                const user = await auth.getCurrentUser();
+                if (user && user.role === 'admin') {
+                    window.location.href = 'admin.html';
+                } else {
                     window.location.href = 'dashboard.html';
                 }
-            }, 100);
+            }
         });
 
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
@@ -258,7 +270,12 @@
                 
                 if (result.user) {
                     utils.showNotification('Welcome back!', 'success');
-                    window.location.href = 'dashboard.html';
+                    // Redirect based on user role
+                    if (result.user.role === 'admin') {
+                        window.location.href = 'admin.html';
+                    } else {
+                        window.location.href = 'dashboard.html';
+                    }
                 } else {
                     throw new Error('Login failed');
                 }

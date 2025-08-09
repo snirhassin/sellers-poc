@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASIN Management - SellersMedia</title>
     
-    <!-- Supabase Client -->
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <script src="config.js"></script>
+    <!-- Demo Configuration (Replace with config.js for production) -->
+    <script src="demo-config.js"></script>
     
     <style>
         * {
@@ -42,6 +41,20 @@
             display: flex;
             align-items: center;
             gap: 1rem;
+        }
+        
+        .user-email {
+            color: white;
+            text-decoration: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .user-email:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
         }
         
         .logout-btn {
@@ -195,24 +208,45 @@
         .table {
             width: 100%;
             border-collapse: collapse;
+            font-size: 0.8rem;
+            table-layout: fixed;
         }
         
         .table th,
         .table td {
-            padding: 1rem;
+            padding: 0.5rem 0.3rem;
             text-align: left;
             border-bottom: 1px solid #dee2e6;
+            word-wrap: break-word;
+            overflow: hidden;
         }
         
         .table th {
             background: #f8f9fa;
             font-weight: 600;
             color: #495057;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .table tr:hover {
             background: #f8f9fa;
         }
+        
+        /* Column widths to prevent horizontal scroll */
+        .table th:nth-child(1), .table td:nth-child(1) { width: 8%; } /* Brand */
+        .table th:nth-child(2), .table td:nth-child(2) { width: 15%; } /* Product Name */
+        .table th:nth-child(3), .table td:nth-child(3) { width: 6%; } /* Country */
+        .table th:nth-child(4), .table td:nth-child(4) { width: 5%; } /* Currency */
+        .table th:nth-child(5), .table td:nth-child(5) { width: 10%; } /* ASIN */
+        .table th:nth-child(6), .table td:nth-child(6) { width: 7%; } /* Price */
+        .table th:nth-child(7), .table td:nth-child(7) { width: 7%; } /* Commission */
+        .table th:nth-child(8), .table td:nth-child(8) { width: 10%; } /* UPC/EAN */
+        .table th:nth-child(9), .table td:nth-child(9) { width: 8%; } /* Expiry */
+        .table th:nth-child(10), .table td:nth-child(10) { width: 8%; } /* Category */
+        .table th:nth-child(11), .table td:nth-child(11) { width: 12%; } /* Comment */
+        .table th:nth-child(12), .table td:nth-child(12) { width: 9%; } /* Actions */
         
         .rate-input {
             width: 80px;
@@ -229,24 +263,239 @@
             min-width: 80px;
         }
         
+        .edit-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            margin-right: 0.2rem;
+        }
+        
+        .edit-btn:hover {
+            background: #0056b3;
+        }
+        
         .delete-btn {
             background: #dc3545;
             color: white;
             border: none;
-            padding: 0.3rem 0.8rem;
-            border-radius: 4px;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
         }
         
         .delete-btn:hover {
             background: #c82333;
         }
         
+        .currency-select {
+            width: 100%;
+            padding: 0.3rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        .country-badge {
+            background: #e9ecef;
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #495057;
+        }
+        
+        .commission-rate {
+            background: #d4edda;
+            color: #155724;
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .category-tag {
+            background: #f8f9fa;
+            color: #495057;
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: 1px solid #dee2e6;
+        }
+        
+        .table code {
+            background: #f8f9fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: Monaco, Consolas, 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #e83e8c;
+        }
+        
         .empty-state {
             text-align: center;
             padding: 3rem;
             color: #666;
+        }
+        
+        .confirmation-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .file-info {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .file-success {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 6px;
+        }
+        
+        .success-icon {
+            font-size: 2rem;
+        }
+        
+        .file-details h4 {
+            color: #155724;
+            margin: 0 0 0.3rem 0;
+            font-size: 1.1rem;
+        }
+        
+        .file-details p {
+            color: #155724;
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        
+        .upload-options h3 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .option-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .option-card {
+            display: block;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .option-card input[type="radio"] {
+            display: none;
+        }
+        
+        .option-content {
+            padding: 1.5rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            text-align: center;
+            background: #f8f9fa;
+            transition: all 0.3s;
+        }
+        
+        .option-card:hover .option-content {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        
+        .option-card input[type="radio"]:checked + .option-content {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+        
+        .option-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .option-content h4 {
+            color: #2c3e50;
+            margin: 0 0 0.5rem 0;
+            font-size: 1.1rem;
+        }
+        
+        .option-content p {
+            color: #666;
+            margin: 0 0 0.5rem 0;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .option-content small {
+            color: #999;
+            font-size: 0.8rem;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            background: white;
+            border-top: 1px solid #dee2e6;
+            gap: 0.5rem;
+        }
+        
+        .pagination-btn {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            color: #495057;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+        
+        .pagination-btn:hover {
+            background: #e9ecef;
+        }
+        
+        .pagination-btn:disabled {
+            background: #f8f9fa;
+            color: #adb5bd;
+            cursor: not-allowed;
+        }
+        
+        .pagination-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .pagination-info {
+            color: #666;
+            font-size: 0.8rem;
+            margin: 0 1rem;
         }
         
         .alert {
@@ -275,12 +524,42 @@
             }
             
             .table {
-                font-size: 0.9rem;
+                font-size: 0.7rem;
             }
             
             .table th,
             .table td {
-                padding: 0.5rem;
+                padding: 0.3rem 0.2rem;
+            }
+            
+            /* Adjust column widths for mobile */
+            .table th:nth-child(1), .table td:nth-child(1) { width: 6%; } /* Brand */
+            .table th:nth-child(2), .table td:nth-child(2) { width: 18%; } /* Product Name */
+            .table th:nth-child(3), .table td:nth-child(3) { width: 5%; } /* Country */
+            .table th:nth-child(4), .table td:nth-child(4) { width: 4%; } /* Currency */
+            .table th:nth-child(5), .table td:nth-child(5) { width: 12%; } /* ASIN */
+            .table th:nth-child(6), .table td:nth-child(6) { width: 8%; } /* Price */
+            .table th:nth-child(7), .table td:nth-child(7) { width: 6%; } /* Commission */
+            .table th:nth-child(8), .table td:nth-child(8) { width: 8%; } /* UPC/EAN */
+            .table th:nth-child(9), .table td:nth-child(9) { width: 6%; } /* Expiry */
+            .table th:nth-child(10), .table td:nth-child(10) { width: 7%; } /* Category */
+            .table th:nth-child(11), .table td:nth-child(11) { width: 10%; } /* Comment */
+            .table th:nth-child(12), .table td:nth-child(12) { width: 10%; } /* Actions */
+            
+            .pagination {
+                flex-wrap: wrap;
+                gap: 0.3rem;
+            }
+            
+            .pagination-btn {
+                padding: 0.3rem 0.5rem;
+                font-size: 0.7rem;
+            }
+            
+            .pagination-info {
+                width: 100%;
+                text-align: center;
+                margin-top: 0.5rem;
             }
         }
     </style>
@@ -289,7 +568,7 @@
     <div class="header">
         <h1>ASIN Management</h1>
         <div class="user-info">
-            <span id="userEmail"></span>
+            <a href="seller-profile.html" class="user-email" id="userEmail">Loading...</a>
             <button class="logout-btn" onclick="logout()">Logout</button>
         </div>
     </div>
@@ -316,33 +595,78 @@
             </div>
             <div>
                 <button class="btn btn-secondary btn-small" onclick="downloadTemplate()">Download CSV Template</button>
+                <button class="btn btn-secondary btn-small" onclick="downloadCurrentAsins()" style="margin-left: 0.5rem;">📥 Download Current ASINs</button>
                 <button class="btn btn-small" onclick="clearAllAsins()" style="margin-left: 0.5rem;">Clear All</button>
             </div>
         </div>
         
         <div id="alertContainer"></div>
         
-        <div class="upload-section">
+        <div class="upload-section" id="uploadSection">
             <h3 style="margin-bottom: 1rem;">Upload CSV File</h3>
             <div class="upload-area" onclick="document.getElementById('csvFile').click()">
                 <div class="upload-icon">📁</div>
                 <p><strong>Click to upload</strong> or drag and drop your CSV file here</p>
-                <p style="color: #666; margin-top: 0.5rem;">CSV files only. Maximum file size: 5MB</p>
+                <p style="color: #666; margin-top: 0.5rem;">CSV files only. Maximum file size: 50MB</p>
             </div>
             <input type="file" id="csvFile" class="file-input" accept=".csv" onchange="handleFileUpload(event)">
             
             <div class="csv-format">
-                <strong>CSV Format:</strong> seller_name, country, product_name, ASIN, product_price, % Commission, expiry_date (optional), category (optional), custom_label1 (optional)
+                <strong>CSV Format:</strong> brand (optional), product_name, country, ASIN, product_price, currency, % Commission, UPC_EAN_GTIN (optional), expiry_date (optional), category (optional), comment (optional), custom_label1 (optional)
                 <br>
-                <em>Example: John Seller, US, Wireless Headphones, B08N5WRWNW, 29.99, 15, 2024-12-31, Electronics, Premium</em>
-                <br><small>Required: seller_name, country, product_name, ASIN, product_price, % Commission. Optional: expiry_date, category, custom_label1</small>
+                <em>Example: Apple, Wireless Headphones, US, B08N5WRWNW, 29.99, USD, 15, 123456789012, 2024-12-31, Electronics, Great product, Premium</em>
+                <br><small>Required: product_name, country, ASIN, product_price, currency, % Commission. Optional: brand, UPC_EAN_GTIN, expiry_date, category, comment, custom_label1</small>
+            </div>
+        </div>
+        
+        <!-- File Confirmation Section (hidden by default) -->
+        <div class="confirmation-section" id="confirmationSection" style="display: none;">
+            <div class="file-info">
+                <div class="file-success">
+                    <span class="success-icon">✅</span>
+                    <div class="file-details">
+                        <h4 id="uploadedFileName">file.csv</h4>
+                        <p id="fileStats">0 ASINs found</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="upload-options">
+                <h3>How would you like to process this file?</h3>
+                <div class="option-cards">
+                    <label class="option-card" for="replaceOption">
+                        <input type="radio" id="replaceOption" name="uploadMode" value="replace">
+                        <div class="option-content">
+                            <div class="option-icon">🔄</div>
+                            <h4>Replace All ASINs</h4>
+                            <p>Remove all existing ASINs and replace with this file</p>
+                            <small id="replaceDesc">Current ASINs will be deleted</small>
+                        </div>
+                    </label>
+                    
+                    <label class="option-card" for="addOption">
+                        <input type="radio" id="addOption" name="uploadMode" value="add" checked>
+                        <div class="option-content">
+                            <div class="option-icon">➕</div>
+                            <h4>Add New ASINs</h4>
+                            <p>Keep existing ASINs and add new ones from this file</p>
+                            <small id="addDesc">Duplicate ASINs will be skipped</small>
+                        </div>
+                    </label>
+                </div>
+                
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="cancelUpload()">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="processUpload()">
+                        <span id="submitBtnText">Submit & Add ASINs</span>
+                    </button>
+                </div>
             </div>
         </div>
         
         <div class="table-section">
             <div class="table-header">
                 <h3>Your ASINs (<span id="asinCount">0</span>)</h3>
-                <button class="btn btn-small" onclick="saveAsins()">Save Changes</button>
             </div>
             
             <div id="tableContainer">
@@ -357,6 +681,8 @@
     <script>
         let currentUser = null;
         let asins = [];
+        let currentPage = 1;
+        const ASINS_PER_PAGE = 100;
 
         // Check authentication and load data
         document.addEventListener('DOMContentLoaded', async function() {
@@ -402,6 +728,7 @@
                 }
                 
                 asins = data || [];
+                currentPage = 1; // Reset to first page when loading new data
                 renderAsinsTable();
                 
             } catch (error) {
@@ -416,6 +743,11 @@
             utils.showNotification(message, type);
         }
         
+        
+        // Store parsed CSV data temporarily
+        let pendingCSVData = null;
+        let pendingFileName = '';
+        
         async function handleFileUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -424,6 +756,8 @@
                 showAlert('Please select a CSV file', 'error');
                 return;
             }
+            
+            pendingFileName = file.name;
             
             const reader = new FileReader();
             reader.onload = async function(e) {
@@ -439,25 +773,30 @@
                         
                         const values = line.split(',').map(item => item.trim().replace(/"/g, ''));
                         
-                        if (values.length >= 6 && values[0] && values[1] && values[2] && values[3] && values[4] && values[5]) { // All 6 required fields
+                        // New format: brand, product_name, country, ASIN, product_price, currency, % Commission, UPC_EAN_GTIN, expiry_date, category, comment, custom_label1
+                        // Required: product_name, country, ASIN, product_price, currency, % Commission (positions 1,2,3,4,5,6)
+                        if (values.length >= 7 && values[1] && values[2] && values[3] && values[4] && values[5] && values[6]) {
                             newAsins.push({
-                                seller_name: values[0] || '',
-                                country: values[1] || '',
-                                product_name: values[2] || '',
+                                brand: values[0] || '',
+                                product_name: values[1] || '',
+                                country: values[2] || '',
                                 ASIN: values[3] || '',
                                 product_price: parseFloat(values[4]) || 0,
-                                '% Commission': parseInt(values[5]) || 0,
-                                expiry_date: values[6] || null,
-                                category: values[7] || '',
-                                custom_label1: values[8] || ''
+                                currency: values[5] || '',
+                                '% Commission': parseInt(values[6]) || 0,
+                                UPC_EAN_GTIN: values[7] || '',
+                                expiry_date: values[8] || null,
+                                category: values[9] || '',
+                                comment: values[10] || '',
+                                custom_label1: values[11] || ''
                             });
                         }
                     });
                     
                     if (newAsins.length > 0) {
-                        // Save to database
-                        await saveAsinsToDatabase(newAsins);
-                        showAlert(`Successfully loaded ${newAsins.length} ASINs from CSV`);
+                        // Store data and show confirmation screen
+                        pendingCSVData = newAsins;
+                        showConfirmationScreen(newAsins.length);
                     } else {
                         showAlert('No valid ASIN data found in CSV file', 'error');
                     }
@@ -471,10 +810,138 @@
             // Reset file input
             event.target.value = '';
         }
+        
+        function showConfirmationScreen(asinCount) {
+            // Hide upload section and show confirmation
+            document.getElementById('uploadSection').style.display = 'none';
+            document.getElementById('confirmationSection').style.display = 'block';
+            
+            // Update file info
+            document.getElementById('uploadedFileName').textContent = pendingFileName;
+            document.getElementById('fileStats').textContent = `${asinCount} ASINs found`;
+            
+            // Update descriptions based on existing ASINs
+            const hasExistingAsins = asins && asins.length > 0;
+            if (hasExistingAsins) {
+                document.getElementById('replaceDesc').textContent = `${asins.length} current ASINs will be deleted`;
+                document.getElementById('addDesc').textContent = `Add to your ${asins.length} existing ASINs (duplicates skipped)`;
+            } else {
+                document.getElementById('replaceDesc').textContent = 'No current ASINs to replace';
+                document.getElementById('addDesc').textContent = 'Add new ASINs to your account';
+                // Select "Replace" option when no existing ASINs
+                document.getElementById('replaceOption').checked = true;
+                document.getElementById('addOption').checked = false;
+            }
+            
+            // Update submit button text based on selection
+            updateSubmitButtonText();
+            
+            // Add event listeners for radio buttons
+            document.querySelectorAll('input[name="uploadMode"]').forEach(radio => {
+                radio.addEventListener('change', updateSubmitButtonText);
+            });
+        }
+        
+        function updateSubmitButtonText() {
+            const selectedMode = document.querySelector('input[name="uploadMode"]:checked').value;
+            const submitBtn = document.getElementById('submitBtnText');
+            if (selectedMode === 'replace') {
+                submitBtn.textContent = 'Submit & Replace All ASINs';
+            } else {
+                submitBtn.textContent = 'Submit & Add ASINs';
+            }
+        }
+        
+        function cancelUpload() {
+            // Reset everything
+            pendingCSVData = null;
+            pendingFileName = '';
+            document.getElementById('csvFile').value = '';
+            
+            // Show upload section and hide confirmation
+            document.getElementById('uploadSection').style.display = 'block';
+            document.getElementById('confirmationSection').style.display = 'none';
+        }
+        
+        async function processUpload() {
+            if (!pendingCSVData || pendingCSVData.length === 0) {
+                showAlert('No data to process', 'error');
+                return;
+            }
+            
+            const selectedMode = document.querySelector('input[name="uploadMode"]:checked').value;
+            
+            try {
+                // Show loading state
+                const submitBtn = document.querySelector('#confirmationSection .btn-primary');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<span>Processing...</span>';
+                submitBtn.disabled = true;
+                
+                // Process duplicates for 'add' mode
+                let finalAsins = [...pendingCSVData];
+                let duplicatesSkipped = 0;
+                
+                if (selectedMode === 'add' && asins && asins.length > 0) {
+                    const existingAsinCodes = new Set(asins.map(asin => asin.ASIN?.toUpperCase()));
+                    const originalCount = finalAsins.length;
+                    
+                    finalAsins = finalAsins.filter(asin => {
+                        if (existingAsinCodes.has(asin.ASIN?.toUpperCase())) {
+                            duplicatesSkipped++;
+                            return false;
+                        }
+                        return true;
+                    });
+                }
+                
+                if (finalAsins.length > 0) {
+                    // Save to database
+                    await saveAsinsToDatabase(finalAsins, selectedMode);
+                    
+                    let message = `Successfully ${selectedMode === 'replace' ? 'replaced with' : 'added'} ${finalAsins.length} ASINs from CSV`;
+                    if (duplicatesSkipped > 0) {
+                        message += `. ${duplicatesSkipped} duplicate ASINs were skipped.`;
+                    }
+                    showAlert(message);
+                    
+                    // Reset and hide confirmation screen
+                    cancelUpload();
+                } else {
+                    if (duplicatesSkipped > 0) {
+                        showAlert(`All ${duplicatesSkipped} ASINs in the CSV already exist. No new ASINs were added.`, 'info');
+                    } else {
+                        showAlert('No ASINs to process', 'error');
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Error processing upload:', error);
+                showAlert('Error processing CSV data', 'error');
+            } finally {
+                // Reset button state
+                const submitBtn = document.querySelector('#confirmationSection .btn-primary');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        }
 
-        async function saveAsinsToDatabase(newAsins) {
+        async function saveAsinsToDatabase(newAsins, uploadMode = 'add') {
             try {
                 utils.showLoading('tableContainer');
+                
+                if (uploadMode === 'replace') {
+                    // First, clear all existing ASINs
+                    const { error: deleteError } = await supabase
+                        .from("Sellers's ASINs")
+                        .delete()
+                        .neq('id', 0); // Delete all records
+                    
+                    if (deleteError) {
+                        throw deleteError;
+                    }
+                }
+                
                 const { data, error } = await database.saveAsins(newAsins);
                 
                 if (error) {
@@ -508,93 +975,114 @@
                 return;
             }
             
+            // Calculate pagination
+            const totalPages = Math.ceil(asins.length / ASINS_PER_PAGE);
+            const startIndex = (currentPage - 1) * ASINS_PER_PAGE;
+            const endIndex = Math.min(startIndex + ASINS_PER_PAGE, asins.length);
+            const paginatedAsins = asins.slice(startIndex, endIndex);
+            
             const table = `
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Seller</th>
+                            <th>Brand</th>
+                            <th>Product</th>
                             <th>Country</th>
-                            <th>Product Name</th>
+                            <th>Curr</th>
                             <th>ASIN</th>
                             <th>Price</th>
-                            <th>Commission %</th>
-                            <th>Expiry Date (optional)</th>
-                            <th>Category (optional)</th>
-                            <th>Action</th>
+                            <th>Comm %</th>
+                            <th>UPC/EAN</th>
+                            <th>Expiry</th>
+                            <th>Category</th>
+                            <th>Comment</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        ${asins.map((asin, index) => `
+                        ${paginatedAsins.map((asin, index) => `
                             <tr>
+                                <td><div style="font-size: 0.75rem; font-weight: bold;">${asin.brand || 'N/A'}</div></td>
+                                <td><div style="font-size: 0.75rem; font-weight: bold; line-height: 1.2;">${asin.product_name || 'N/A'}</div></td>
+                                <td><span class="country-badge" style="font-size: 0.7rem; padding: 0.2rem 0.4rem;">${asin.country || 'N/A'}</span></td>
+                                <td><strong style="font-size: 0.75rem;">${asin.currency || 'N/A'}</strong></td>
+                                <td><code style="font-size: 0.7rem; padding: 0.1rem 0.2rem;">${asin.ASIN || 'N/A'}</code></td>
+                                <td><strong style="font-size: 0.75rem;">$${asin.product_price || '0.00'}</strong></td>
+                                <td><span class="commission-rate" style="font-size: 0.7rem; padding: 0.2rem 0.4rem;">${asin['% Commission'] || 0}%</span></td>
+                                <td><div style="font-size: 0.7rem; word-break: break-all;">${asin.UPC_EAN_GTIN || 'N/A'}</div></td>
+                                <td><div style="font-size: 0.7rem;">${asin.expiry_date ? new Date(asin.expiry_date).toLocaleDateString() : 'None'}</div></td>
+                                <td><span class="category-tag" style="font-size: 0.7rem; padding: 0.2rem 0.4rem;">${asin.category || 'Other'}</span></td>
+                                <td><div style="font-size: 0.7rem; line-height: 1.2;">${asin.comment || 'None'}</div></td>
                                 <td>
-                                    <input type="text" 
-                                           class="rate-input" 
-                                           value="${asin.seller_name || ''}" 
-                                           placeholder="Seller name"
-                                           onchange="updateAsinField('${asin.id}', ${index}, 'seller_name', this.value)">
-                                </td>
-                                <td>
-                                    <select class="market-select" onchange="updateAsinField('${asin.id}', ${index}, 'country', this.value)">
-                                        <option value="">Select</option>
-                                        <option value="US" ${asin.country === 'US' ? 'selected' : ''}>US</option>
-                                        <option value="UK" ${asin.country === 'UK' ? 'selected' : ''}>UK</option>
-                                        <option value="DE" ${asin.country === 'DE' ? 'selected' : ''}>DE</option>
-                                        <option value="FR" ${asin.country === 'FR' ? 'selected' : ''}>FR</option>
-                                        <option value="IT" ${asin.country === 'IT' ? 'selected' : ''}>IT</option>
-                                        <option value="ES" ${asin.country === 'ES' ? 'selected' : ''}>ES</option>
-                                        <option value="CA" ${asin.country === 'CA' ? 'selected' : ''}>CA</option>
-                                        <option value="JP" ${asin.country === 'JP' ? 'selected' : ''}>JP</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="text" 
-                                           class="rate-input" 
-                                           value="${asin.product_name || ''}" 
-                                           placeholder="Product name"
-                                           onchange="updateAsinField('${asin.id}', ${index}, 'product_name', this.value)">
-                                </td>
-                                <td><strong>${asin.ASIN || ''}</strong></td>
-                                <td>
-                                    <input type="number" 
-                                           class="rate-input" 
-                                           value="${asin.product_price || ''}" 
-                                           min="0" 
-                                           step="0.01"
-                                           placeholder="29.99"
-                                           onchange="updateAsinField('${asin.id}', ${index}, 'product_price', parseFloat(this.value) || 0)">
-                                </td>
-                                <td>
-                                    <input type="number" 
-                                           class="rate-input" 
-                                           value="${asin['% Commission'] || ''}" 
-                                           min="0" 
-                                           max="100" 
-                                           placeholder="15"
-                                           onchange="updateAsinField('${asin.id}', ${index}, '% Commission', parseInt(this.value) || 0)">
-                                </td>
-                                <td>
-                                    <input type="date" 
-                                           class="rate-input" 
-                                           value="${asin.expiry_date || ''}" 
-                                           onchange="updateAsinField('${asin.id}', ${index}, 'expiry_date', this.value)">
-                                </td>
-                                <td>
-                                    <input type="text" 
-                                           class="rate-input" 
-                                           value="${asin.category || ''}" 
-                                           placeholder="Electronics"
-                                           onchange="updateAsinField('${asin.id}', ${index}, 'category', this.value)">
-                                </td>
-                                <td>
-                                    <button class="delete-btn" onclick="deleteAsinFromDB('${asin.id}', ${index})">Delete</button>
+                                    <div style="display: flex; flex-direction: column; gap: 0.2rem;">
+                                        <button class="edit-btn" onclick="editAsin('${asin.id}')">Edit</button>
+                                        <button class="delete-btn" onclick="deleteAsinFromDB('${asin.id}', ${startIndex + index})">Del</button>
+                                    </div>
                                 </td>
                             </tr>
                         `).join('')}
                     </tbody>
                 </table>
+                ${renderPagination(totalPages, startIndex + 1, endIndex)}
             `;
             
             container.innerHTML = table;
+        }
+        
+        function renderPagination(totalPages, startItem, endItem) {
+            if (totalPages <= 1) return '';
+            
+            let paginationHtml = '<div class="pagination">';
+            
+            // Previous button
+            paginationHtml += `<button class="pagination-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">‹ Prev</button>`;
+            
+            // Page numbers
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+            
+            if (endPage - startPage + 1 < maxVisiblePages) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+            
+            if (startPage > 1) {
+                paginationHtml += `<button class="pagination-btn" onclick="changePage(1)">1</button>`;
+                if (startPage > 2) {
+                    paginationHtml += `<span style="padding: 0 0.5rem;">...</span>`;
+                }
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                paginationHtml += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+            }
+            
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    paginationHtml += `<span style="padding: 0 0.5rem;">...</span>`;
+                }
+                paginationHtml += `<button class="pagination-btn" onclick="changePage(${totalPages})">${totalPages}</button>`;
+            }
+            
+            // Next button
+            paginationHtml += `<button class="pagination-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})">Next ›</button>`;
+            
+            // Info
+            paginationHtml += `<span class="pagination-info">Showing ${startItem}-${endItem} of ${asins.length} ASINs</span>`;
+            
+            paginationHtml += '</div>';
+            return paginationHtml;
+        }
+        
+        function changePage(newPage) {
+            const totalPages = Math.ceil(asins.length / ASINS_PER_PAGE);
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                renderAsinsTable();
+                
+                // Scroll to top of table
+                document.getElementById('tableContainer').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         }
         
         async function updateAsinField(id, index, field, value) {
@@ -619,6 +1107,11 @@
                 // Reload to revert changes
                 await loadAsinsFromDatabase();
             }
+        }
+        
+        function editAsin(id) {
+            // Redirect to dedicated edit page
+            window.location.href = `edit-asin.html?id=${id}`;
         }
         
         async function deleteAsinFromDB(id, index) {
@@ -677,16 +1170,16 @@
         }
         
         function downloadTemplate() {
-            // CSV template matching new Supabase "Sellers's ASINs" table order
-            const csvContent = `seller_name,country,product_name,ASIN,product_price,% Commission,expiry_date,category,custom_label1
-John Seller,US,Wireless Headphones,B08N5WRWNW,29.99,15,2024-12-31,Electronics,Premium
-Jane Merchant,UK,Bluetooth Speaker,B07XJ8C8F5,45.50,12,2024-11-30,Electronics,Featured
-Mike Store,DE,Phone Case,B09KMVJY8P,19.99,18,2025-01-15,Accessories,Trending
-Sarah Shop,FR,Smart Watch,B07VJKQXW9,89.99,14,2024-10-31,Wearables,High Convert
-Tech Depot,IT,USB Cable,B08XQVYQMH,12.99,16,2024-12-15,Accessories,Basic
-Global Goods,ES,Gaming Mouse,B09N3ZPQRS,65.00,13,2025-02-28,Electronics,Gaming
-Best Deals,CA,Keyboard,B08HMWZBXC,24.99,17,2024-11-15,Electronics,Office
-Top Seller,JP,Laptop Stand,B07PDHSJ41,199.99,11,2024-12-31,Accessories,Ergonomic`;
+            // Updated CSV template with new fields: brand, product_name, country, ASIN, product_price, currency, % Commission, UPC_EAN_GTIN, expiry_date, category, comment, custom_label1
+            const csvContent = `brand,product_name,country,ASIN,product_price,currency,% Commission,UPC_EAN_GTIN,expiry_date,category,comment,custom_label1
+Amber,Wireless Headphones,US,B08N5WRWNW,29.99,USD,15,123456789012,2024-12-31,Electronics,Great sound quality,Premium
+Amber,Bluetooth Speaker,UK,B07XJ8C8F5,45.50,GBP,12,234567890123,2024-11-30,Electronics,Waterproof design,Featured
+Amber,Phone Case,DE,B09KMVJY8P,19.99,EUR,18,345678901234,2025-01-15,Accessories,Drop protection,Trending
+Amber,Smart Watch,FR,B07VJKQXW9,89.99,EUR,14,456789012345,2024-10-31,Wearables,Health tracking,High Convert
+Amber,USB Cable,IT,B08XQVYQMH,12.99,EUR,16,567890123456,2024-12-15,Accessories,Fast charging,Basic
+Amber,Gaming Mouse,ES,B09N3ZPQRS,65.00,EUR,13,678901234567,2025-02-28,Electronics,RGB lighting,Gaming
+Amber,Keyboard,CA,B08HMWZBXC,24.99,CAD,17,789012345678,2024-11-15,Electronics,Mechanical switches,Office
+Amber,Laptop Stand,JP,B07PDHSJ41,199.99,JPY,11,890123456789,2024-12-31,Accessories,Aluminum construction,Ergonomic`;
             
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const url = window.URL.createObjectURL(blob);
@@ -697,6 +1190,72 @@ Top Seller,JP,Laptop Stand,B07PDHSJ41,199.99,11,2024-12-31,Accessories,Ergonomic
             a.click();
             document.body.removeChild(a);
             window.URL.revokeObjectURL(url);
+        }
+        
+        function downloadCurrentAsins() {
+            if (!asins || asins.length === 0) {
+                showAlert('No ASINs to download. Please upload some ASINs first.', 'info');
+                return;
+            }
+            
+            // Create CSV content with current ASINs data
+            const headers = 'brand,product_name,country,ASIN,product_price,currency,% Commission,UPC_EAN_GTIN,expiry_date,category,comment,custom_label1';
+            
+            const csvRows = asins.map(asin => {
+                // Format expiry date
+                let expiryDate = '';
+                if (asin.expiry_date) {
+                    try {
+                        expiryDate = new Date(asin.expiry_date).toISOString().split('T')[0]; // YYYY-MM-DD format
+                    } catch (e) {
+                        expiryDate = asin.expiry_date || '';
+                    }
+                }
+                
+                // Escape CSV values and handle empty fields
+                const csvValues = [
+                    asin.brand || '',
+                    asin.product_name || '',
+                    asin.country || '',
+                    asin.ASIN || '',
+                    asin.product_price || '0',
+                    asin.currency || '',
+                    asin['% Commission'] || '0',
+                    asin.UPC_EAN_GTIN || '',
+                    expiryDate,
+                    asin.category || '',
+                    asin.comment || '',
+                    asin.custom_label1 || ''
+                ];
+                
+                // Wrap values with quotes if they contain commas and escape quotes
+                return csvValues.map(value => {
+                    const stringValue = String(value);
+                    if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+                        return `"${stringValue.replace(/"/g, '""')}"`;
+                    }
+                    return stringValue;
+                }).join(',');
+            });
+            
+            const csvContent = headers + '\\n' + csvRows.join('\\n');
+            
+            // Create and download file
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            
+            // Generate filename with date
+            const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+            a.download = `my-asins-${today}.csv`;
+            
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            showAlert(`Downloaded ${asins.length} ASINs to Excel-compatible CSV file`, 'success');
         }
         
         async function logout() {

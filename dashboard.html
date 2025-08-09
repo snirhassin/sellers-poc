@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - SellersMedia</title>
     
-    <!-- Supabase Client -->
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <script src="config.js"></script>
+    <!-- Demo Configuration (Replace with config.js for production) -->
+    <script src="demo-config.js"></script>
     
     <style>
         * {
@@ -42,6 +41,43 @@
             display: flex;
             align-items: center;
             gap: 1rem;
+        }
+        
+        .user-email {
+            color: white;
+            text-decoration: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            transition: all 0.3s;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .user-email:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        
+        .seller-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            transition: all 0.3s;
+        }
+        
+        .user-email:hover .seller-avatar {
+            border-color: rgba(255,255,255,0.6);
+            transform: scale(1.05);
         }
         
         .logout-btn {
@@ -178,6 +214,89 @@
             transform: translateY(-1px);
         }
         
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        .footer-section h4 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: #ecf0f1;
+        }
+        
+        .footer-section p {
+            color: #bdc3c7;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-links a {
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: #ecf0f1;
+        }
+        
+        .support-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+        
+        .support-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid #34495e;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            text-align: center;
+            color: #95a5a6;
+            font-size: 0.9rem;
+        }
+        
+        .support-floating {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
@@ -196,6 +315,16 @@
             .stats {
                 grid-template-columns: 1fr;
             }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .support-floating {
+                bottom: 1rem;
+                right: 1rem;
+            }
         }
     </style>
 </head>
@@ -203,7 +332,10 @@
     <div class="header">
         <h1>SellersMedia Dashboard</h1>
         <div class="user-info">
-            <span id="userEmail"></span>
+            <a href="seller-profile.html" class="user-email" id="userEmail">
+                <div class="seller-avatar">S</div>
+                <span id="userEmailText">Loading...</span>
+            </a>
             <button class="logout-btn" onclick="logout()">Logout</button>
         </div>
     </div>
@@ -258,6 +390,50 @@
         </div>
     </div>
 
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>SellersMedia</h4>
+                <p>Amplify your Amazon success through our review & comparison network. Connect with high-converting traffic and maximize your product visibility.</p>
+                <a href="#" class="support-btn" onclick="openSupport()">
+                    💬 Get Support
+                </a>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="dashboard.html">Home</a></li>
+                    <li><a href="asins.html">ASINs</a></li>
+                    <li><a href="reports.html">Reports</a></li>
+                    <li><a href="seller-profile.html">Profile</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul class="footer-links">
+                    <li><a href="#" onclick="openSupport()">Help Center</a></li>
+                    <li><a href="#" onclick="openSupport()">Contact Us</a></li>
+                    <li><a href="#" onclick="openSupport()">FAQ</a></li>
+                    <li><a href="#" onclick="openSupport()">Documentation</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2024 SellersMedia. All rights reserved. | <a href="#" onclick="openSupport()" style="color: #95a5a6;">Terms of Service</a> | <a href="#" onclick="openSupport()" style="color: #95a5a6;">Privacy Policy</a></p>
+        </div>
+    </footer>
+
+    <!-- Floating Support Button -->
+    <div class="support-floating">
+        <button class="support-btn" onclick="openSupport()">
+            💬 Support
+        </button>
+    </div>
+
     <script>
         let currentUser = null;
 
@@ -281,7 +457,10 @@
                 // Get current user
                 currentUser = await auth.getCurrentUser();
                 if (currentUser) {
-                    document.getElementById('userEmail').textContent = currentUser.email;
+                    document.getElementById('userEmailText').textContent = currentUser.email;
+                    // Update avatar with first letter of email
+                    const firstLetter = currentUser.email.charAt(0).toUpperCase();
+                    document.querySelector('.seller-avatar').textContent = firstLetter;
                 }
                 
                 // Load ASIN statistics from database
@@ -333,6 +512,26 @@
                 // Fallback: redirect anyway
                 window.location.href = 'index.html';
             }
+        }
+        
+        function openSupport() {
+            // Create support modal or redirect to support system
+            const supportOptions = [
+                'Email Support: support@sellersmedia.com',
+                'Live Chat: Available 24/7',
+                'Help Center: Online documentation',
+                'Phone Support: +1 (555) 123-HELP'
+            ];
+            
+            const message = 'Choose your preferred support option:\n\n' + 
+                          supportOptions.map((option, index) => `${index + 1}. ${option}`).join('\n') +
+                          '\n\nWe\'re here to help you succeed!';
+            
+            utils.showNotification('Support options displayed in console - check browser console', 'info');
+            console.log('=== SellersMedia Support Options ===');
+            console.log(message);
+            
+            // In production, this would open a support ticket system, live chat, or help center
         }
     </script>
 </body>

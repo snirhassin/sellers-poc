@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - SellersMedia</title>
+    
+    <!-- Demo Configuration (Replace with config.js for production) -->
+    <script src="demo-config.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 300;
+        }
+        
+        .admin-badge {
+            background: #e74c3c;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .nav {
+            background: white;
+            padding: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .nav-list {
+            list-style: none;
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .nav-item {
+            flex: 1;
+        }
+        
+        .nav-link {
+            display: block;
+            padding: 1rem;
+            text-decoration: none;
+            color: #333;
+            text-align: center;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-link:hover {
+            background: #f8f9fa;
+        }
+        
+        .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .admin-card {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid #667eea;
+        }
+        
+        .admin-card h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+        
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stats-label {
+            color: #666;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .table-section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .table-header {
+            background: #2c3e50;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table th {
+            background: #f8f9fa;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #2c3e50;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .user-email {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .asin-count {
+            background: #667eea;
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+        
+        .action-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+        }
+        
+        .action-btn:hover {
+            background: #0056b3;
+        }
+        
+        .action-btn.danger {
+            background: #dc3545;
+        }
+        
+        .action-btn.danger:hover {
+            background: #c82333;
+        }
+        
+        .recent-activity {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .activity-item {
+            padding: 1rem;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .activity-text {
+            flex: 1;
+        }
+        
+        .activity-time {
+            color: #666;
+            font-size: 0.8rem;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+            padding: 1rem;
+        }
+        
+        .pagination-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            background: white;
+            color: #666;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .pagination-btn:hover {
+            background: #f8f9fa;
+            border-color: #667eea;
+            color: #667eea;
+        }
+        
+        .pagination-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .pagination-btn:disabled {
+            background: #f8f9fa;
+            color: #ccc;
+            border-color: #eee;
+            cursor: not-allowed;
+        }
+        
+        .pagination-info {
+            margin: 0 1rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .seller-table-container {
+            max-height: 600px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+        }
+        
+        @media (max-width: 768px) {
+            .admin-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .table-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+            
+            .table {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>SellersMedia Admin</h1>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <span class="admin-badge">Admin</span>
+            <span id="adminEmail">admin@sellersmedia.com</span>
+        </div>
+    </div>
+    
+    <nav class="nav">
+        <ul class="nav-list">
+            <li class="nav-item">
+                <a href="admin.html" class="nav-link active">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-pending-sellers.html" class="nav-link">Pending Sellers</a>
+            </li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <div class="admin-grid">
+            <div class="admin-card">
+                <h3>Total Users</h3>
+                <div class="stats-number" id="totalUsers">0</div>
+                <div class="stats-label">Registered Sellers</div>
+            </div>
+            
+            <div class="admin-card">
+                <h3>Total ASINs</h3>
+                <div class="stats-number" id="totalAsins">0</div>
+                <div class="stats-label">Product Listings</div>
+            </div>
+            
+            <div class="admin-card">
+                <h3>Revenue (Mock)</h3>
+                <div class="stats-number">$12.5K</div>
+                <div class="stats-label">This Month</div>
+            </div>
+        </div>
+        
+        <div class="table-section">
+            <div class="table-header">
+                <h3>All Sellers</h3>
+                <span>Seller Management & Overview</span>
+            </div>
+            
+            <div id="adminTableContainer">
+                <div style="padding: 2rem; text-align: center; color: #666;">
+                    Loading admin data...
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        let allAsins = [];
+        let userStats = {};
+        let currentPage = 1;
+        const sellersPerPage = 20;
+        
+        // Demo sellers data - 25 sellers
+        const demoSellers = [
+            { id: 'S001', name: 'Sarah Johnson', email: 'sarah@techgadgets.com', company: 'TechGadgets Pro', country: 'US', asins: 45, avgCommission: 15.2, totalRevenue: 12450 },
+            { id: 'S002', name: 'Michael Chen', email: 'mike@smartdevices.co.uk', company: 'Smart Devices Ltd', country: 'UK', asins: 32, avgCommission: 13.8, totalRevenue: 8720 },
+            { id: 'S003', name: 'Emma Rodriguez', email: 'emma@homeessentials.ca', company: 'Home Essentials Inc', country: 'CA', asins: 28, avgCommission: 16.5, totalRevenue: 6340 },
+            { id: 'S004', name: 'Hans Mueller', email: 'hans@qualitytools.de', company: 'Quality Tools GmbH', country: 'DE', asins: 51, avgCommission: 14.2, totalRevenue: 15680 },
+            { id: 'S005', name: 'Marie Dubois', email: 'marie@luxurygoods.fr', company: 'Luxury Goods SARL', country: 'FR', asins: 19, avgCommission: 18.7, totalRevenue: 4230 },
+            { id: 'S006', name: 'James Wilson', email: 'james@outdoorgear.com', company: 'Outdoor Gear Co', country: 'US', asins: 37, avgCommission: 12.9, totalRevenue: 9850 },
+            { id: 'S007', name: 'Anna Kowalski', email: 'anna@homecomfort.pl', company: 'Home Comfort Poland', country: 'PL', asins: 23, avgCommission: 15.6, totalRevenue: 5670 },
+            { id: 'S008', name: 'Roberto Silva', email: 'roberto@techbrasil.br', company: 'Tech Brasil Ltda', country: 'BR', asins: 41, avgCommission: 17.3, totalRevenue: 11200 },
+            { id: 'S009', name: 'Yuki Tanaka', email: 'yuki@gadgetjapan.jp', company: 'Gadget Japan KK', country: 'JP', asins: 33, avgCommission: 13.4, totalRevenue: 7890 },
+            { id: 'S010', name: 'Sofia Andersson', email: 'sofia@nordictech.se', company: 'Nordic Tech AB', country: 'SE', asins: 29, avgCommission: 16.1, totalRevenue: 6720 },
+            { id: 'S011', name: 'David Kumar', email: 'david@indiasmart.in', company: 'India Smart Solutions', country: 'IN', asins: 26, avgCommission: 14.8, totalRevenue: 5430 },
+            { id: 'S012', name: 'Lisa Thompson', email: 'lisa@aussiegadgets.au', company: 'Aussie Gadgets Pty', country: 'AU', asins: 38, avgCommission: 15.9, totalRevenue: 9340 },
+            { id: 'S013', name: 'Carlos Mendez', email: 'carlos@techmexico.mx', company: 'Tech Mexico SA', country: 'MX', asins: 22, avgCommission: 17.1, totalRevenue: 4890 },
+            { id: 'S014', name: 'Isabella Rossi', email: 'isabella@italiatech.it', company: 'Italia Tech SRL', country: 'IT', asins: 35, avgCommission: 13.7, totalRevenue: 8210 },
+            { id: 'S015', name: 'Pavel Novak', email: 'pavel@czechtech.cz', company: 'Czech Tech s.r.o.', country: 'CZ', asins: 27, avgCommission: 16.3, totalRevenue: 6180 },
+            { id: 'S016', name: 'Nina Petrov', email: 'nina@russiadigital.ru', company: 'Russia Digital LLC', country: 'RU', asins: 44, avgCommission: 12.6, totalRevenue: 10560 },
+            { id: 'S017', name: 'Ahmed Hassan', email: 'ahmed@middleeasttech.ae', company: 'Middle East Tech FZ', country: 'AE', asins: 31, avgCommission: 18.2, totalRevenue: 7650 },
+            { id: 'S018', name: 'Grace Kim', email: 'grace@koreatechno.kr', company: 'Korea Techno Co Ltd', country: 'KR', asins: 39, avgCommission: 14.5, totalRevenue: 9120 },
+            { id: 'S019', name: 'Erik Nielsen', email: 'erik@danishtech.dk', company: 'Danish Tech ApS', country: 'DK', asins: 25, avgCommission: 15.8, totalRevenue: 5890 },
+            { id: 'S020', name: 'Fatima Al-Zahra', email: 'fatima@arabtech.sa', company: 'Arab Tech Solutions', country: 'SA', asins: 36, avgCommission: 17.4, totalRevenue: 8970 },
+            { id: 'S021', name: 'Lucas da Silva', email: 'lucas@brasilgadgets.br', company: 'Brasil Gadgets Ltda', country: 'BR', asins: 30, avgCommission: 13.9, totalRevenue: 7230 },
+            { id: 'S022', name: 'Ingrid Larsson', email: 'ingrid@swedentech.se', company: 'Sweden Tech AB', country: 'SE', asins: 42, avgCommission: 16.7, totalRevenue: 11340 },
+            { id: 'S023', name: 'Oliver Martinez', email: 'oliver@espanatech.es', company: 'España Tech SL', country: 'ES', asins: 24, avgCommission: 15.3, totalRevenue: 5120 },
+            { id: 'S024', name: 'Chloe Dubois', email: 'chloe@belgiquetech.be', company: 'Belgique Tech SPRL', country: 'BE', asins: 33, avgCommission: 14.1, totalRevenue: 7840 },
+            { id: 'S025', name: 'Alexander Müller', email: 'alex@austriatech.at', company: 'Austria Tech GmbH', country: 'AT', asins: 28, avgCommission: 16.9, totalRevenue: 6530 }
+        ];
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Check authentication
+            const isLoggedIn = await auth.isLoggedIn();
+            if (!isLoggedIn) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Load admin data
+            await loadAdminData();
+        });
+        
+        async function loadAdminData() {
+            try {
+                // Get all ASINs from database (admin can see all)
+                const { data: asins, error } = await database.getAllAsins();
+                
+                if (error) {
+                    console.error('Error loading ASINs:', error);
+                    return;
+                }
+                
+                allAsins = asins || [];
+                
+                // Calculate stats
+                updateAdminStats();
+                renderSellersTable();
+                
+            } catch (error) {
+                console.error('Error loading admin data:', error);
+            }
+        }
+        
+        function updateAdminStats() {
+            // Update stats with demo data
+            document.getElementById('totalUsers').textContent = demoSellers.length;
+            
+            // Calculate total ASINs from all demo sellers
+            const totalAsins = demoSellers.reduce((sum, seller) => sum + seller.asins, 0);
+            document.getElementById('totalAsins').textContent = totalAsins;
+        }
+        
+        function renderSellersTable() {
+            const container = document.getElementById('adminTableContainer');
+            
+            // Calculate pagination
+            const totalPages = Math.ceil(demoSellers.length / sellersPerPage);
+            const startIndex = (currentPage - 1) * sellersPerPage;
+            const endIndex = startIndex + sellersPerPage;
+            const currentSellers = demoSellers.slice(startIndex, endIndex);
+            
+            const table = `
+                <div class="seller-table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Seller ID</th>
+                                <th>Name</th>
+                                <th>Company</th>
+                                <th>Country</th>
+                                <th>ASINs</th>
+                                <th>Avg Commission</th>
+                                <th>Revenue</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${currentSellers.map(seller => `
+                                <tr>
+                                    <td><strong>${seller.id}</strong></td>
+                                    <td>
+                                        <div><strong>${seller.name}</strong></div>
+                                        <div style="font-size: 0.8rem; color: #666;">${seller.email}</div>
+                                    </td>
+                                    <td><strong>${seller.company}</strong></td>
+                                    <td><span class="country-badge">${seller.country}</span></td>
+                                    <td><span class="asin-count">${seller.asins}</span></td>
+                                    <td>${seller.avgCommission}%</td>
+                                    <td><strong>$${seller.totalRevenue.toLocaleString()}</strong></td>
+                                    <td>
+                                        <button class="action-btn" onclick="viewSellerDetails('${seller.id}')">Manage</button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="pagination">
+                    <button class="pagination-btn" onclick="changePage(1)" ${currentPage === 1 ? 'disabled' : ''}>First</button>
+                    <button class="pagination-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>Prev</button>
+                    
+                    ${generatePageNumbers(currentPage, totalPages)}
+                    
+                    <button class="pagination-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>
+                    <button class="pagination-btn" onclick="changePage(${totalPages})" ${currentPage === totalPages ? 'disabled' : ''}>Last</button>
+                    
+                    <div class="pagination-info">
+                        Page ${currentPage} of ${totalPages} (${demoSellers.length} sellers total)
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = table;
+        }
+        
+        function generatePageNumbers(current, total) {
+            let pages = '';
+            const range = 2; // Show 2 pages before and after current
+            
+            for (let i = Math.max(1, current - range); i <= Math.min(total, current + range); i++) {
+                pages += `<button class="pagination-btn ${i === current ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+            }
+            
+            return pages;
+        }
+        
+        function changePage(page) {
+            const totalPages = Math.ceil(demoSellers.length / sellersPerPage);
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                renderSellersTable();
+            }
+        }
+        
+        function viewSellerDetails(sellerId) {
+            // Redirect to the detailed seller management page
+            window.location.href = `admin-seller-manage.html?seller=${sellerId}`;
+        }
+        
+        function suspendSeller(seller) {
+            if (confirm(`Are you sure you want to suspend seller: ${seller}?`)) {
+                alert(`Seller ${seller} has been suspended.\n\nIn production, this would disable their account and hide their ASINs.`);
+            }
+        }
+    </script>
+</body>
+</html>

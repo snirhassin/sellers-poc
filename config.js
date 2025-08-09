@@ -113,6 +113,16 @@ const database = {
     return { error };
   },
 
+  // Get all ASINs (admin function)
+  async getAllAsins() {
+    const { data, error } = await supabase
+      .from("Sellers's ASINs")
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    return { data, error };
+  },
+
   // Get performance report data (mock for now)
   async getPerformanceReport() {
     // Since we don't have the performance_reports table with your structure,

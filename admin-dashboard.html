@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - SellersMedia</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 300;
+        }
+        
+        .admin-badge {
+            background: #e74c3c;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-email {
+            color: white;
+            text-decoration: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .user-email:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        
+        .admin-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            transition: all 0.3s;
+        }
+        
+        .user-email:hover .admin-avatar {
+            border-color: rgba(255,255,255,0.6);
+            transform: scale(1.05);
+        }
+        
+        .admin-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            min-width: 220px;
+            z-index: 1000;
+            display: none;
+            margin-top: 0.5rem;
+        }
+        
+        .admin-dropdown.show {
+            display: block;
+        }
+        
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            color: #333;
+            text-decoration: none;
+            display: block;
+            transition: background 0.2s;
+            border-bottom: 1px solid #f1f1f1;
+            cursor: pointer;
+        }
+        
+        .dropdown-item:hover {
+            background: #f8f9fa;
+            color: #2c3e50;
+        }
+        
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+        
+        .dropdown-header {
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            background: #f8f9fa;
+            border-bottom: 1px solid #ddd;
+            font-size: 0.9rem;
+        }
+        
+        .logout-btn {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: white;
+            color: #2c3e50;
+        }
+        
+        .nav {
+            background: white;
+            padding: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .nav-list {
+            list-style: none;
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .nav-item {
+            flex: 1;
+        }
+        
+        .nav-link {
+            display: block;
+            padding: 1.2rem 2rem;
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: #2c3e50;
+            background: #f8f9fa;
+            border-bottom-color: #e74c3c;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .welcome {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .welcome h2 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+        
+        .welcome-text {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .top-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .stat-card.sellers {
+            border-left: 4px solid #3498db;
+        }
+        
+        .stat-card.asins {
+            border-left: 4px solid #2ecc71;
+        }
+        
+        .stat-card.revenue {
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #2c3e50;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 1rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-trend {
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .trend-up {
+            color: #27ae60;
+        }
+        
+        .trend-down {
+            color: #e74c3c;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .section-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+        
+        .section-header {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .section-header h3 {
+            color: #2c3e50;
+            margin: 0;
+        }
+        
+        .section-content {
+            padding: 0;
+        }
+        
+        .sellers-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            table-layout: fixed;
+            min-width: 1200px;
+        }
+        
+        .sellers-table th {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        .sellers-table td {
+            padding: 2rem;
+            border-bottom: 1px solid #f1f3f4;
+            vertical-align: middle;
+        }
+        
+        .sellers-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .sellers-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        
+        .action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+        
+        .recent-activity {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid #f1f3f4;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        
+        .activity-seller {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+        
+        .activity-asin {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+        
+        .activity-revenue {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .activity-details {
+            flex: 1;
+        }
+        
+        .activity-title {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .activity-desc {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.2rem;
+        }
+        
+        .activity-time {
+            font-size: 0.8rem;
+            color: #999;
+            margin-top: 0.3rem;
+        }
+        
+        .alert-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+        
+        .alert-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .alert-icon {
+            color: #856404;
+            font-size: 1.2rem;
+        }
+        
+        .alert-text {
+            flex: 1;
+            font-size: 0.9rem;
+            color: #856404;
+        }
+        
+        .seller-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+        
+        .seller-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0;
+        }
+        
+        .seller-email {
+            font-size: 0.9rem;
+            color: #666;
+            margin: 0;
+        }
+        
+        .company-name {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1rem;
+        }
+        
+        .company-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            padding: 0.5rem;
+            margin: -0.5rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .company-link:hover {
+            background: #f8f9fa;
+            color: #667eea;
+            text-decoration: underline;
+            transform: translateX(2px);
+        }
+        
+        .company-link:hover .company-name {
+            color: #667eea;
+        }
+        
+        .revenue-amount {
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+        
+        .asin-count {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 1rem;
+        }
+        
+        .country-code {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn-small {
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            white-space: nowrap;
+        }
+        
+        .btn-asins {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-asins:hover {
+            background: #5a6fd8;
+            color: white;
+        }
+        
+        .btn-reports {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-reports:hover {
+            background: #218838;
+            color: white;
+        }
+        
+        .btn-edit {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-edit:hover {
+            background: #5a6268;
+            color: white;
+        }
+        
+        .btn-invoices {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .btn-invoices:hover {
+            background: #138496;
+            color: white;
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        .footer-section h4 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: #ecf0f1;
+        }
+        
+        .footer-section p {
+            color: #bdc3c7;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-links a {
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: #ecf0f1;
+        }
+        
+        .support-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+        
+        .support-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid #34495e;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            text-align: center;
+            color: #95a5a6;
+            font-size: 0.9rem;
+        }
+        
+        .support-floating {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+        
+        @media (max-width: 768px) {
+            .top-stats {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+            
+            .stat-number {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1>Admin Dashboard</h1>
+            <span class="admin-badge">Administrator</span>
+        </div>
+        <div class="user-info">
+            <span class="user-email" onclick="toggleAdminDropdown()">
+                <div class="admin-avatar">A</div>
+                admin@sellersmedia.com
+                <div class="admin-dropdown" id="adminDropdown">
+                    <div class="dropdown-header">Admin Account</div>
+                    <div class="dropdown-item" onclick="resetAdminPassword()">🔑 Reset Password</div>
+                    <div class="dropdown-item" onclick="editAdminContact()">📝 Edit Contact Info</div>
+                </div>
+            </span>
+            <button class="logout-btn" onclick="adminLogout()">Logout</button>
+        </div>
+    </div>
+    
+    <nav class="nav">
+        <ul class="nav-list">
+            <li class="nav-item">
+                <a href="admin-dashboard.html" class="nav-link active">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-pending-sellers.html" class="nav-link">Pending Sellers</a>
+            </li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <div class="welcome">
+            <h2>Welcome to the Admin Dashboard</h2>
+            <p class="welcome-text">Monitor platform performance, manage sellers, and oversee ASIN operations from this central command center.</p>
+        </div>
+        
+        <!-- Top Statistics Cards -->
+        <div class="top-stats">
+            <div class="stat-card sellers">
+                <span class="stat-number" id="totalSellers">0</span>
+                <div class="stat-label">Total Sellers</div>
+                <div class="stat-trend trend-up" id="sellersGrowth">+12% this month</div>
+            </div>
+            <div class="stat-card asins">
+                <span class="stat-number" id="totalAsins">0</span>
+                <div class="stat-label">Total ASINs</div>
+                <div class="stat-trend trend-up" id="asinsGrowth">+8% this month</div>
+            </div>
+            <div class="stat-card revenue">
+                <span class="stat-number" id="revenueLastMonth">$0</span>
+                <div class="stat-label">Revenue Last Month</div>
+                <div class="stat-trend trend-up" id="revenueGrowth">+15% vs previous</div>
+            </div>
+        </div>
+        
+        <!-- Sellers Management -->
+        <div class="section-card">
+            <div class="section-header">
+                <h3>Active Sellers</h3>
+                <div style="margin-top: 1rem;">
+                    <input 
+                        type="text" 
+                        id="sellerSearch" 
+                        placeholder="Search by contact name or company..." 
+                        style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem;"
+                        autocomplete="off"
+                    >
+                    <div id="searchSuggestions" style="display: none; position: absolute; background: white; border: 1px solid #ddd; border-top: none; border-radius: 0 0 4px 4px; max-height: 200px; overflow-y: auto; width: calc(100% - 4rem); z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15);"></div>
+                </div>
+            </div>
+            <div class="section-content">
+                <table class="sellers-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">ID</th>
+                            <th style="width: 280px;">Contact</th>
+                            <th style="width: 220px;">Company</th>
+                            <th style="width: 100px;">Country</th>
+                            <th style="width: 80px;">ASINs</th>
+                            <th style="width: 140px;">Revenue to Date</th>
+                            <th style="width: 140px;">Last Month</th>
+                            <th style="width: 260px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sellersTable">
+                        <!-- Sellers will be loaded here -->
+                    </tbody>
+                </table>
+                
+                <!-- Pagination Controls -->
+                <div id="paginationControls" style="display: flex; justify-content: center; align-items: center; padding: 2rem; gap: 1rem; background: #f8f9fa; border-top: 1px solid #dee2e6;">
+                    <!-- Pagination will be rendered here -->
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>SellersMedia</h4>
+                <p>Amplify your Amazon success through our review & comparison network. Connect with high-converting traffic and maximize your product visibility.</p>
+                <a href="#" class="support-btn" onclick="openSupport()">
+                    💬 Get Support
+                </a>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="admin-dashboard.html">Admin Home</a></li>
+                    <li><a href="admin-pending-sellers.html">Pending Sellers</a></li>
+                    <li><a href="index.html">Seller Login</a></li>
+                    <li><a href="dashboard.html">Seller Dashboard</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul class="footer-links">
+                    <li><a href="#" onclick="openSupport()">Help Center</a></li>
+                    <li><a href="#" onclick="openSupport()">Contact Us</a></li>
+                    <li><a href="#" onclick="openSupport()">FAQ</a></li>
+                    <li><a href="#" onclick="openSupport()">Documentation</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2024 SellersMedia. All rights reserved. | <a href="#" onclick="openSupport()" style="color: #95a5a6;">Terms of Service</a> | <a href="#" onclick="openSupport()" style="color: #95a5a6;">Privacy Policy</a></p>
+        </div>
+    </footer>
+
+    <!-- Floating Support Button -->
+    <div class="support-floating">
+        <button class="support-btn" onclick="openSupport()">
+            💬 Support
+        </button>
+    </div>
+
+    <script>
+        // Demo data for admin dashboard
+        const adminData = {
+            sellers: {
+                total: 24,
+                active: 18,
+                growth: 12
+            },
+            asins: {
+                total: 1247,
+                pending: 23,
+                growth: 8
+            },
+            revenue: {
+                lastMonth: 47850,
+                growth: 15
+            },
+            markets: ['US', 'UK', 'DE', 'FR', 'CA', 'JP'],
+            avgCommission: 15.2
+        };
+
+        // Demo sellers data - 25 sellers
+        const demoSellers = [
+            { id: 'S001', name: 'Sarah Johnson', email: 'sarah@techgadgets.com', company: 'TechGadgets Pro', country: 'US', asins: 45, revenueToDate: 12450, lastMonthRevenue: 2340 },
+            { id: 'S002', name: 'Michael Chen', email: 'mike@smartdevices.co.uk', company: 'Smart Devices Ltd', country: 'UK', asins: 32, revenueToDate: 8720, lastMonthRevenue: 1890 },
+            { id: 'S003', name: 'Emma Rodriguez', email: 'emma@homeessentials.ca', company: 'Home Essentials Inc', country: 'CA', asins: 28, revenueToDate: 6340, lastMonthRevenue: 1450 },
+            { id: 'S004', name: 'Hans Mueller', email: 'hans@qualitytools.de', company: 'Quality Tools GmbH', country: 'DE', asins: 51, revenueToDate: 15680, lastMonthRevenue: 3120 },
+            { id: 'S005', name: 'Marie Dubois', email: 'marie@luxurygoods.fr', company: 'Luxury Goods SARL', country: 'FR', asins: 19, revenueToDate: 4230, lastMonthRevenue: 890 },
+            { id: 'S006', name: 'James Wilson', email: 'james@outdoorgear.com', company: 'Outdoor Gear Co', country: 'US', asins: 37, revenueToDate: 9850, lastMonthRevenue: 1780 },
+            { id: 'S007', name: 'Anna Kowalski', email: 'anna@homecomfort.pl', company: 'Home Comfort Poland', country: 'PL', asins: 23, revenueToDate: 5670, lastMonthRevenue: 1120 },
+            { id: 'S008', name: 'Roberto Silva', email: 'roberto@techbrasil.br', company: 'Tech Brasil Ltda', country: 'BR', asins: 41, revenueToDate: 11200, lastMonthRevenue: 2180 },
+            { id: 'S009', name: 'Yuki Tanaka', email: 'yuki@gadgetjapan.jp', company: 'Gadget Japan KK', country: 'JP', asins: 33, revenueToDate: 7890, lastMonthRevenue: 1560 },
+            { id: 'S010', name: 'Sofia Andersson', email: 'sofia@nordictech.se', company: 'Nordic Tech AB', country: 'SE', asins: 29, revenueToDate: 6720, lastMonthRevenue: 1340 },
+            { id: 'S011', name: 'David Kumar', email: 'david@indiasmart.in', company: 'India Smart Solutions', country: 'IN', asins: 26, revenueToDate: 5430, lastMonthRevenue: 980 },
+            { id: 'S012', name: 'Lisa Thompson', email: 'lisa@aussiegadgets.au', company: 'Aussie Gadgets Pty', country: 'AU', asins: 38, revenueToDate: 9340, lastMonthRevenue: 1870 },
+            { id: 'S013', name: 'Carlos Mendez', email: 'carlos@techmexico.mx', company: 'Tech Mexico SA', country: 'MX', asins: 22, revenueToDate: 4890, lastMonthRevenue: 920 },
+            { id: 'S014', name: 'Isabella Rossi', email: 'isabella@italiatech.it', company: 'Italia Tech SRL', country: 'IT', asins: 35, revenueToDate: 8210, lastMonthRevenue: 1650 },
+            { id: 'S015', name: 'Pavel Novak', email: 'pavel@czechtech.cz', company: 'Czech Tech s.r.o.', country: 'CZ', asins: 27, revenueToDate: 6180, lastMonthRevenue: 1230 },
+            { id: 'S016', name: 'Nina Petrov', email: 'nina@russiadigital.ru', company: 'Russia Digital LLC', country: 'RU', asins: 44, revenueToDate: 10560, lastMonthRevenue: 2100 },
+            { id: 'S017', name: 'Ahmed Hassan', email: 'ahmed@middleeasttech.ae', company: 'Middle East Tech FZ', country: 'AE', asins: 31, revenueToDate: 7650, lastMonthRevenue: 1520 },
+            { id: 'S018', name: 'Grace Kim', email: 'grace@koreatechno.kr', company: 'Korea Techno Co Ltd', country: 'KR', asins: 39, revenueToDate: 9120, lastMonthRevenue: 1830 },
+            { id: 'S019', name: 'Erik Nielsen', email: 'erik@danishtech.dk', company: 'Danish Tech ApS', country: 'DK', asins: 25, revenueToDate: 5890, lastMonthRevenue: 1180 },
+            { id: 'S020', name: 'Fatima Al-Zahra', email: 'fatima@arabtech.sa', company: 'Arab Tech Solutions', country: 'SA', asins: 36, revenueToDate: 8970, lastMonthRevenue: 1790 },
+            { id: 'S021', name: 'Lucas da Silva', email: 'lucas@brasilgadgets.br', company: 'Brasil Gadgets Ltda', country: 'BR', asins: 30, revenueToDate: 7230, lastMonthRevenue: 1440 },
+            { id: 'S022', name: 'Ingrid Larsson', email: 'ingrid@swedentech.se', company: 'Sweden Tech AB', country: 'SE', asins: 42, revenueToDate: 11340, lastMonthRevenue: 2270 },
+            { id: 'S023', name: 'Oliver Martinez', email: 'oliver@espanatech.es', company: 'España Tech SL', country: 'ES', asins: 24, revenueToDate: 5120, lastMonthRevenue: 1020 },
+            { id: 'S024', name: 'Chloe Dubois', email: 'chloe@belgiquetech.be', company: 'Belgique Tech SPRL', country: 'BE', asins: 33, revenueToDate: 7840, lastMonthRevenue: 1570 },
+            { id: 'S025', name: 'Alexander Müller', email: 'alex@austriatech.at', company: 'Austria Tech GmbH', country: 'AT', asins: 28, revenueToDate: 6530, lastMonthRevenue: 1310 }
+        ];
+
+        function getCountryFlag(country) {
+            const flags = {
+                'US': '🇺🇸',
+                'UK': '🇬🇧',
+                'CA': '🇨🇦',
+                'DE': '🇩🇪',
+                'FR': '🇫🇷'
+            };
+            return flags[country] || '🌍';
+        }
+
+        function getInitials(name) {
+            return name.split(' ').map(n => n[0]).join('').toUpperCase();
+        }
+
+        function renderSellersTable() {
+            const tbody = document.getElementById('sellersTable');
+            
+            // Calculate pagination
+            const totalPages = Math.ceil(filteredSellers.length / sellersPerPage);
+            const startIndex = (currentPage - 1) * sellersPerPage;
+            const endIndex = startIndex + sellersPerPage;
+            const currentSellers = filteredSellers.slice(startIndex, endIndex);
+            
+            // Update table headers with sorting indicators
+            updateTableHeaders();
+            
+            tbody.innerHTML = currentSellers.map(seller => `
+                <tr>
+                    <td>
+                        <div class="seller-id" style="font-weight: 600; color: #667eea; font-family: monospace; font-size: 0.9rem;">
+                            ${seller.id}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="seller-info">
+                            <div class="seller-name">${seller.name}</div>
+                            <div class="seller-email">${seller.email}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <a href="admin-seller-manage.html?seller=${seller.id}" class="company-link">
+                            <div class="company-name">${seller.company}</div>
+                        </a>
+                    </td>
+                    <td><div class="country-code">${seller.country}</div></td>
+                    <td><div class="asin-count">${seller.asins}</div></td>
+                    <td><div class="revenue-amount">$${seller.revenueToDate.toLocaleString()}</div></td>
+                    <td><div class="revenue-amount">$${seller.lastMonthRevenue.toLocaleString()}</div></td>
+                    <td>
+                        <div class="action-buttons">
+                            <a href="admin-seller-manage.html?seller=${seller.id}&tab=asins" class="action-btn-small btn-asins">
+                                📦 ASINs
+                            </a>
+                            <a href="admin-seller-manage.html?seller=${seller.id}&tab=reports" class="action-btn-small btn-reports">
+                                📊 Reports
+                            </a>
+                            <a href="admin-seller-manage.html?seller=${seller.id}&tab=invoices" class="action-btn-small btn-invoices">
+                                💼 Invoices
+                            </a>
+                            <a href="admin-seller-manage.html?seller=${seller.id}&tab=edit" class="action-btn-small btn-edit">
+                                ✏️ Edit
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+            
+            // Render pagination
+            renderPagination(totalPages);
+        }
+
+
+
+        // Load dashboard data
+        function loadDashboardData() {
+            console.log('Loading admin dashboard data');
+            
+            // Update top statistics
+            document.getElementById('totalSellers').textContent = adminData.sellers.total;
+            document.getElementById('totalAsins').textContent = adminData.asins.total.toLocaleString();
+            document.getElementById('revenueLastMonth').textContent = `$${adminData.revenue.lastMonth.toLocaleString()}`;
+            
+            // Update growth indicators
+            document.getElementById('sellersGrowth').textContent = `+${adminData.sellers.growth}% this month`;
+            document.getElementById('asinsGrowth').textContent = `+${adminData.asins.growth}% this month`;
+            document.getElementById('revenueGrowth').textContent = `+${adminData.revenue.growth}% vs previous`;
+            
+            // Load sellers table
+            renderSellersTable();
+        }
+
+        // Export data function
+        function exportData() {
+            console.log('Exporting admin data');
+            
+            // Generate CSV content
+            let csvContent = `SellersMedia Admin Export - ${new Date().toLocaleDateString()}\n\n`;
+            
+            csvContent += `PLATFORM SUMMARY\n`;
+            csvContent += `Metric,Value\n`;
+            csvContent += `Total Sellers,${adminData.sellers.total}\n`;
+            csvContent += `Active Sellers,${adminData.sellers.active}\n`;
+            csvContent += `Total ASINs,${adminData.asins.total}\n`;
+            csvContent += `Pending ASINs,${adminData.asins.pending}\n`;
+            csvContent += `Revenue Last Month,$${adminData.revenue.lastMonth}\n`;
+            csvContent += `Average Commission,${adminData.avgCommission}%\n`;
+            csvContent += `Total Markets,${adminData.markets.length}\n`;
+            csvContent += `Markets,"${adminData.markets.join(', ')}"\n`;
+            
+            // Download CSV
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `admin-export-${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            console.log('Admin data exported successfully');
+        }
+
+        // Admin dropdown functions
+        function toggleAdminDropdown() {
+            const dropdown = document.getElementById('adminDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('adminDropdown');
+            const userEmail = document.querySelector('.user-email');
+            
+            if (!userEmail.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        function resetAdminPassword() {
+            const dropdown = document.getElementById('adminDropdown');
+            dropdown.classList.remove('show');
+            
+            if (confirm('Reset your admin password? A new temporary password will be generated and emailed to you.')) {
+                alert('Password reset request sent. Check your email for the new temporary password.');
+            }
+        }
+
+        function editAdminContact() {
+            const dropdown = document.getElementById('adminDropdown');
+            dropdown.classList.remove('show');
+            
+            const modal = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+                    <div style="background: white; padding: 2rem; border-radius: 8px; max-width: 500px; width: 90%;">
+                        <h3 style="margin-bottom: 1.5rem; color: #2c3e50;">Edit Admin Contact Information</h3>
+                        <form id="adminContactForm">
+                            <div style="margin-bottom: 1rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Name:</label>
+                                <input type="text" id="adminName" value="Admin User" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Email:</label>
+                                <input type="email" id="adminEmail" value="admin@sellersmedia.com" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
+                            </div>
+                            <div style="margin-bottom: 1.5rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Phone:</label>
+                                <input type="tel" id="adminPhone" value="+1-555-ADMIN" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
+                            </div>
+                            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                                <button type="button" onclick="closeAdminContactModal()" style="padding: 0.5rem 1rem; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;">Cancel</button>
+                                <button type="submit" style="padding: 0.5rem 1rem; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modal);
+            
+            document.getElementById('adminContactForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('adminName').value;
+                const email = document.getElementById('adminEmail').value;
+                const phone = document.getElementById('adminPhone').value;
+                
+                closeAdminContactModal();
+                alert(`Contact information updated successfully!\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}`);
+            });
+        }
+
+        function closeAdminContactModal() {
+            const modal = document.querySelector('[style*="position: fixed"]');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+
+        // Pagination and sorting variables
+        let currentPage = 1;
+        const sellersPerPage = 20;
+        let currentSort = { column: null, direction: 'asc' };
+        
+        // Search functionality
+        let allSellers = demoSellers;
+        let filteredSellers = [...demoSellers];
+
+        function initializeSearch() {
+            const searchInput = document.getElementById('sellerSearch');
+            const suggestions = document.getElementById('searchSuggestions');
+            
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                
+                if (searchTerm === '') {
+                    filteredSellers = [...allSellers];
+                    suggestions.style.display = 'none';
+                    renderSellersTable();
+                    return;
+                }
+                
+                // Filter sellers by name or company
+                filteredSellers = allSellers.filter(seller => 
+                    seller.name.toLowerCase().includes(searchTerm) ||
+                    seller.company.toLowerCase().includes(searchTerm)
+                );
+                
+                // Show suggestions
+                showSuggestions(searchTerm, filteredSellers);
+                
+                // Reset to first page when searching
+                currentPage = 1;
+                
+                // Update table
+                renderSellersTable();
+            });
+            
+            searchInput.addEventListener('keydown', function(e) {
+                const suggestions = document.getElementById('searchSuggestions');
+                const suggestionItems = suggestions.querySelectorAll('.suggestion-item');
+                
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    // Navigate down suggestions
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    // Navigate up suggestions
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    suggestions.style.display = 'none';
+                } else if (e.key === 'Escape') {
+                    suggestions.style.display = 'none';
+                    searchInput.blur();
+                }
+            });
+            
+            // Close suggestions when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !suggestions.contains(e.target)) {
+                    suggestions.style.display = 'none';
+                }
+            });
+        }
+
+        function showSuggestions(searchTerm, sellers) {
+            const suggestions = document.getElementById('searchSuggestions');
+            
+            if (sellers.length === 0) {
+                suggestions.innerHTML = '<div style="padding: 1rem; color: #666; text-align: center;">No sellers found</div>';
+                suggestions.style.display = 'block';
+                return;
+            }
+            
+            const maxSuggestions = Math.min(5, sellers.length);
+            const suggestionHTML = sellers.slice(0, maxSuggestions).map(seller => `
+                <div class="suggestion-item" style="padding: 0.75rem; cursor: pointer; border-bottom: 1px solid #f1f1f1; transition: background 0.2s;" 
+                     onclick="selectSeller('${seller.id}')">
+                    <div style="font-weight: 600; color: #2c3e50;">${highlightMatch(seller.name, searchTerm)}</div>
+                    <div style="font-size: 0.9rem; color: #666;">${highlightMatch(seller.company, searchTerm)}</div>
+                    <div style="font-size: 0.8rem; color: #999;">${seller.country} • ${seller.asins} ASINs</div>
+                </div>
+            `).join('');
+            
+            if (sellers.length > maxSuggestions) {
+                suggestionHTML += `<div style="padding: 0.5rem; text-align: center; color: #666; font-size: 0.8rem; border-top: 1px solid #f1f1f1;">+${sellers.length - maxSuggestions} more results</div>`;
+            }
+            
+            suggestions.innerHTML = suggestionHTML;
+            suggestions.style.display = 'block';
+        }
+
+        function highlightMatch(text, searchTerm) {
+            if (!searchTerm) return text;
+            const regex = new RegExp(`(${searchTerm})`, 'gi');
+            return text.replace(regex, '<mark style="background: #fff3cd; padding: 0;">$1</mark>');
+        }
+
+        function selectSeller(sellerId) {
+            const seller = allSellers.find(s => s.id === sellerId);
+            if (seller) {
+                document.getElementById('sellerSearch').value = `${seller.name} - ${seller.company}`;
+                filteredSellers = [seller];
+                renderSellersTable();
+            }
+            document.getElementById('searchSuggestions').style.display = 'none';
+        }
+
+        // Add hover effects to suggestions
+        document.addEventListener('DOMContentLoaded', function() {
+            document.body.addEventListener('mouseover', function(e) {
+                if (e.target.classList.contains('suggestion-item') || e.target.closest('.suggestion-item')) {
+                    const item = e.target.classList.contains('suggestion-item') ? e.target : e.target.closest('.suggestion-item');
+                    item.style.background = '#f8f9fa';
+                }
+            });
+            
+            document.body.addEventListener('mouseout', function(e) {
+                if (e.target.classList.contains('suggestion-item') || e.target.closest('.suggestion-item')) {
+                    const item = e.target.classList.contains('suggestion-item') ? e.target : e.target.closest('.suggestion-item');
+                    item.style.background = 'white';
+                }
+            });
+        });
+
+
+        // Admin logout function
+        function adminLogout() {
+            // Clear any admin session data
+            localStorage.removeItem('adminSession');
+            localStorage.removeItem('userSession');
+            sessionStorage.clear();
+            
+            // Clear browser cache for this session
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => {
+                        caches.delete(name);
+                    });
+                });
+            }
+            
+            // Redirect to main login page
+            window.location.replace('index.html');
+        }
+
+        // Add sorting and pagination functions
+        function updateTableHeaders() {
+            const headers = document.querySelectorAll('.sellers-table th');
+            const sortableColumns = ['name', 'company', 'country', 'asins', 'revenueToDate', 'lastMonthRevenue'];
+            
+            headers.forEach((header, index) => {
+                if (sortableColumns[index - 1]) {
+                    header.style.cursor = 'pointer';
+                    header.style.userSelect = 'none';
+                    header.onclick = () => sortTable(sortableColumns[index - 1]);
+                    
+                    // Add sort indicator
+                    const column = sortableColumns[index - 1];
+                    let indicator = '';
+                    if (currentSort.column === column) {
+                        indicator = currentSort.direction === 'asc' ? ' ▲' : ' ▼';
+                    }
+                    header.innerHTML = header.innerHTML.split(' ▲')[0].split(' ▼')[0] + indicator;
+                }
+            });
+        }
+        
+        function sortTable(column) {
+            if (currentSort.column === column) {
+                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.column = column;
+                currentSort.direction = 'asc';
+            }
+            
+            filteredSellers.sort((a, b) => {
+                let aVal = a[column];
+                let bVal = b[column];
+                
+                // Handle string comparison
+                if (typeof aVal === 'string') {
+                    aVal = aVal.toLowerCase();
+                    bVal = bVal.toLowerCase();
+                }
+                
+                if (currentSort.direction === 'asc') {
+                    return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+                } else {
+                    return aVal > bVal ? -1 : aVal < bVal ? 1 : 0;
+                }
+            });
+            
+            currentPage = 1; // Reset to first page after sorting
+            renderSellersTable();
+        }
+        
+        function renderPagination(totalPages) {
+            const container = document.getElementById('paginationControls');
+            
+            if (totalPages <= 1) {
+                container.innerHTML = `
+                    <div style="color: #666; font-size: 0.9rem;">
+                        Showing ${filteredSellers.length} of ${allSellers.length} sellers
+                    </div>
+                `;
+                return;
+            }
+            
+            const startIndex = (currentPage - 1) * sellersPerPage + 1;
+            const endIndex = Math.min(currentPage * sellersPerPage, filteredSellers.length);
+            
+            let paginationHTML = `
+                <button onclick="changePage(1)" ${currentPage === 1 ? 'disabled' : ''} 
+                        style="padding: 0.5rem 1rem; border: 1px solid #ddd; background: ${currentPage === 1 ? '#f8f9fa' : 'white'}; color: ${currentPage === 1 ? '#ccc' : '#333'}; border-radius: 4px; cursor: ${currentPage === 1 ? 'not-allowed' : 'pointer'};">
+                    First
+                </button>
+                <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}
+                        style="padding: 0.5rem 1rem; border: 1px solid #ddd; background: ${currentPage === 1 ? '#f8f9fa' : 'white'}; color: ${currentPage === 1 ? '#ccc' : '#333'}; border-radius: 4px; cursor: ${currentPage === 1 ? 'not-allowed' : 'pointer'};">
+                    Previous
+                </button>
+            `;
+            
+            // Page numbers
+            const startPage = Math.max(1, currentPage - 2);
+            const endPage = Math.min(totalPages, currentPage + 2);
+            
+            for (let i = startPage; i <= endPage; i++) {
+                paginationHTML += `
+                    <button onclick="changePage(${i})" 
+                            style="padding: 0.5rem 1rem; border: 1px solid #ddd; background: ${i === currentPage ? '#667eea' : 'white'}; color: ${i === currentPage ? 'white' : '#333'}; border-radius: 4px; cursor: pointer; font-weight: ${i === currentPage ? '600' : 'normal'};">
+                        ${i}
+                    </button>
+                `;
+            }
+            
+            paginationHTML += `
+                <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}
+                        style="padding: 0.5rem 1rem; border: 1px solid #ddd; background: ${currentPage === totalPages ? '#f8f9fa' : 'white'}; color: ${currentPage === totalPages ? '#ccc' : '#333'}; border-radius: 4px; cursor: ${currentPage === totalPages ? 'not-allowed' : 'pointer'};">
+                    Next
+                </button>
+                <button onclick="changePage(${totalPages})" ${currentPage === totalPages ? 'disabled' : ''}
+                        style="padding: 0.5rem 1rem; border: 1px solid #ddd; background: ${currentPage === totalPages ? '#f8f9fa' : 'white'}; color: ${currentPage === totalPages ? '#ccc' : '#333'}; border-radius: 4px; cursor: ${currentPage === totalPages ? 'not-allowed' : 'pointer'};">
+                    Last
+                </button>
+                
+                <div style="margin-left: 2rem; color: #666; font-size: 0.9rem; display: flex; align-items: center;">
+                    Showing ${startIndex}-${endIndex} of ${filteredSellers.length} sellers (Page ${currentPage} of ${totalPages})
+                </div>
+            `;
+            
+            container.innerHTML = paginationHTML;
+        }
+        
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredSellers.length / sellersPerPage);
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                renderSellersTable();
+                
+                // Scroll to top of table
+                document.querySelector('.sellers-table').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+        
+        // Support function
+        function openSupport() {
+            const supportOptions = [
+                'Email Support: admin@sellersmedia.com',
+                'Live Chat: Available 24/7 for admin users',
+                'Admin Help Center: Advanced documentation',
+                'Priority Phone Support: +1 (555) 123-ADMIN'
+            ];
+            
+            const message = 'Admin Support Options:\n\n' + 
+                          supportOptions.map((option, index) => `${index + 1}. ${option}`).join('\n') +
+                          '\n\nWe provide priority support for admin users!';
+            
+            console.log('=== SellersMedia Admin Support ===');
+            console.log(message);
+            alert(message);
+        }
+        
+        // Update admin data to reflect 25 sellers
+        adminData.sellers.total = 25;
+        
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Initializing admin dashboard with 25 sellers');
+            loadDashboardData();
+            initializeSearch();
+        });
+    </script>
+</body>
+</html>

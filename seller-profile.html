@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Profile - SellersMedia</title>
+    
+    <!-- Demo Configuration (Replace with config.js for production) -->
+    <script src="demo-config.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 300;
+        }
+        
+        .back-btn {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .back-btn:hover {
+            background: white;
+            color: #2c3e50;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+        }
+        
+        .profile-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            height: fit-content;
+        }
+        
+        .profile-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+        
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+        }
+        
+        .profile-email {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+        
+        .profile-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 6px;
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .profile-info {
+            padding: 2rem;
+        }
+        
+        .info-section {
+            margin-bottom: 2rem;
+        }
+        
+        .info-section h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .info-label {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .info-value {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .payments-section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .section-header {
+            background: #2c3e50;
+            color: white;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .section-header h2 {
+            font-size: 1.3rem;
+            font-weight: 300;
+        }
+        
+        .payment-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .payment-tab {
+            flex: 1;
+            padding: 1rem 2rem;
+            text-align: center;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .payment-tab.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .payment-tab:hover {
+            background: #e9ecef;
+        }
+        
+        .tab-content {
+            padding: 2rem;
+        }
+        
+        .payment-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .summary-card {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 1.5rem;
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }
+        
+        .summary-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .summary-label {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .payment-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .payment-table th {
+            background: #f8f9fa;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #2c3e50;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .payment-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .payment-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .invoice-id {
+            font-family: monospace;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .payment-amount {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .amount-positive {
+            color: #28a745;
+        }
+        
+        .amount-negative {
+            color: #dc3545;
+        }
+        
+        .payment-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-paid {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-unpaid {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-overdue {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5a6fd8;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .edit-profile-btn {
+            width: 100%;
+            padding: 0.8rem;
+            margin-top: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .edit-profile-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        .footer-section h4 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: #ecf0f1;
+        }
+        
+        .footer-section p {
+            color: #bdc3c7;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-links a {
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: #ecf0f1;
+        }
+        
+        .support-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+        
+        .support-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid #34495e;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            text-align: center;
+            color: #95a5a6;
+            font-size: 0.9rem;
+        }
+        
+        .support-floating {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                margin: 1rem;
+                padding: 0 1rem;
+            }
+            
+            .payment-summary {
+                grid-template-columns: 1fr;
+            }
+            
+            .payment-tabs {
+                flex-direction: column;
+            }
+            
+            .payment-table {
+                font-size: 0.9rem;
+            }
+            
+            .payment-table th,
+            .payment-table td {
+                padding: 0.5rem;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .support-floating {
+                bottom: 1rem;
+                right: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Seller Profile</h1>
+        <a href="dashboard.html" class="back-btn">
+            ← Back to Dashboard
+        </a>
+    </div>
+    
+    <div class="container">
+        <!-- Profile Card -->
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar" id="profileAvatar">👤</div>
+                <div class="profile-name" id="profileName">Demo Seller</div>
+                <div class="profile-email" id="profileEmail">seller@demo.com</div>
+                
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalASINs">0</div>
+                        <div class="stat-label">Active ASINs</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="overdueAmountProfile">$0</div>
+                        <div class="stat-label">Overdue Amount</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="profile-info">
+                <div class="info-section">
+                    <h3>Account Information</h3>
+                    <div class="info-item">
+                        <span class="info-label">Account Status</span>
+                        <span class="info-value">
+                            <span class="status-badge status-active">Active</span>
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Member Since</span>
+                        <span class="info-value" id="memberSince">January 2024</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Next Payment (NET-30)</span>
+                        <span class="info-value" id="nextPaymentDate">Loading...</span>
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <h3>Seller Contact Info</h3>
+                    <div class="info-item">
+                        <span class="info-label">Contact Name</span>
+                        <span class="info-value" id="contactName">John Doe</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Contact Email</span>
+                        <span class="info-value" id="contactEmail">john.doe@business.com</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Business Address</span>
+                        <span class="info-value" id="businessAddress">123 Business St, City, State 12345</span>
+                    </div>
+                </div>
+                
+                <button class="edit-profile-btn" onclick="editProfile()">
+                    Edit Profile
+                </button>
+            </div>
+        </div>
+        
+        <!-- Payments Section -->
+        <div class="payments-section">
+            <div class="section-header">
+                <h2>Payments & Invoices</h2>
+                <button class="btn btn-primary" onclick="downloadStatement()">
+                    📄 Download Statement
+                </button>
+            </div>
+            
+            <div class="payment-tabs">
+                <button class="payment-tab active" onclick="showTab('invoices')">Invoices</button>
+                <button class="payment-tab" onclick="showTab('summary')">Summary</button>
+            </div>
+            
+            <div class="tab-content">
+                <!-- Invoices Tab -->
+                <div id="invoices-tab" class="tab-panel">
+                    <div class="payment-summary">
+                        <div class="summary-card">
+                            <div class="summary-number" id="totalInvoiced">$0</div>
+                            <div class="summary-label">Total Invoiced</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-number" id="outstandingAmount">$0</div>
+                            <div class="summary-label">Outstanding</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-number" id="overdueAmount">$0</div>
+                            <div class="summary-label">Overdue Amount</div>
+                        </div>
+                    </div>
+                    
+                    <table class="payment-table">
+                        <thead>
+                            <tr>
+                                <th>Invoice ID</th>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoicesTableBody">
+                            <!-- Invoices will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Summary Tab -->
+                <div id="summary-tab" class="tab-panel" style="display: none;">
+                    <div class="payment-summary">
+                        <div class="summary-card">
+                            <div class="summary-number" id="netBalance">$0</div>
+                            <div class="summary-label">Net Balance</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-number" id="ytdEarnings">$0</div>
+                            <div class="summary-label">YTD Earnings</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-number" id="projectedEarnings">$0</div>
+                            <div class="summary-label">Projected Annual</div>
+                        </div>
+                    </div>
+                    
+                    <div id="summaryContent">
+                        <h4 style="margin-bottom: 1rem; color: #2c3e50;">Account Summary</h4>
+                        <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 6px;">
+                            <p style="margin-bottom: 1rem;">Your account shows consistent performance with regular payments and commission earnings.</p>
+                            <p style="margin-bottom: 1rem;"><strong>Recent Activity:</strong> Regular invoice generation and payment processing.</p>
+                            <p><strong>Next Steps:</strong> Continue uploading quality ASINs to maximize earnings potential.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>SellersMedia</h4>
+                <p>Amplify your Amazon success through our review & comparison network. Connect with high-converting traffic and maximize your product visibility.</p>
+                <a href="#" class="support-btn" onclick="openSupport()">
+                    💬 Get Support
+                </a>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="dashboard.html">Home</a></li>
+                    <li><a href="asins.html">ASINs</a></li>
+                    <li><a href="reports.html">Reports</a></li>
+                    <li><a href="seller-profile.html">Profile</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul class="footer-links">
+                    <li><a href="#" onclick="openSupport()">Help Center</a></li>
+                    <li><a href="#" onclick="openSupport()">Contact Us</a></li>
+                    <li><a href="#" onclick="openSupport()">FAQ</a></li>
+                    <li><a href="#" onclick="openSupport()">Documentation</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2024 SellersMedia. All rights reserved. | <a href="#" onclick="openSupport()" style="color: #95a5a6;">Terms of Service</a> | <a href="#" onclick="openSupport()" style="color: #95a5a6;">Privacy Policy</a></p>
+        </div>
+    </footer>
+
+    <!-- Floating Support Button -->
+    <div class="support-floating">
+        <button class="support-btn" onclick="openSupport()">
+            💬 Support
+        </button>
+    </div>
+
+    <script>
+        let currentTab = 'invoices';
+        
+        // Mock data
+        const mockInvoices = [
+            {
+                id: 'INV-2024-001',
+                date: '2024-01-15',
+                description: 'Commission Payment - January 2024',
+                amount: 2350.75,
+                status: 'paid'
+            },
+            {
+                id: 'INV-2024-002',
+                date: '2024-02-15',
+                description: 'Commission Payment - February 2024',
+                amount: 1890.50,
+                status: 'paid'
+            },
+            {
+                id: 'INV-2024-003',
+                date: '2024-03-15',
+                description: 'Commission Payment - March 2024',
+                amount: 3125.25,
+                status: 'unpaid'
+            },
+            {
+                id: 'INV-2024-004',
+                date: '2024-04-15',
+                description: 'Commission Payment - April 2024',
+                amount: 2785.80,
+                status: 'overdue'
+            }
+        ];
+        
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Check authentication
+            const isLoggedIn = await auth.isLoggedIn();
+            if (!isLoggedIn) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            await loadProfileData();
+            populatePaymentData();
+        });
+        
+        async function loadProfileData() {
+            try {
+                // Get current user
+                const user = await auth.getCurrentUser();
+                if (user) {
+                    document.getElementById('profileName').textContent = user.name || 'Demo Seller';
+                    document.getElementById('profileEmail').textContent = user.email;
+                    
+                    // Set avatar initial
+                    const initial = user.name ? user.name.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase();
+                    document.getElementById('profileAvatar').textContent = initial;
+                }
+                
+                // Get ASINs count
+                const { data: asins } = await database.getAsins();
+                if (asins) {
+                    document.getElementById('totalASINs').textContent = asins.length;
+                    
+                    // Calculate overdue amount (from mock invoices data)
+                    const overdue = mockInvoices.filter(inv => inv.status === 'overdue').reduce((sum, inv) => sum + inv.amount, 0);
+                    document.getElementById('overdueAmountProfile').textContent = `$${overdue.toLocaleString()}`;
+                }
+                
+                // Calculate NET-30 payment date (last day of following month)
+                const today = new Date();
+                const nextMonth = new Date(today.getFullYear(), today.getMonth() + 2, 0); // Last day of next month
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                document.getElementById('nextPaymentDate').textContent = nextMonth.toLocaleDateString('en-US', options);
+                
+                // Load saved profile data for contact info
+                const savedProfile = JSON.parse(localStorage.getItem('sellerProfile') || '{}');
+                if (savedProfile.firstName && savedProfile.lastName) {
+                    document.getElementById('contactName').textContent = `${savedProfile.firstName} ${savedProfile.lastName}`;
+                } else if (user && user.name) {
+                    document.getElementById('contactName').textContent = user.name;
+                }
+                if (savedProfile.email) {
+                    document.getElementById('contactEmail').textContent = savedProfile.email;
+                } else if (user && user.email) {
+                    document.getElementById('contactEmail').textContent = user.email;
+                }
+                if (savedProfile.address && savedProfile.city) {
+                    document.getElementById('businessAddress').textContent = `${savedProfile.address}, ${savedProfile.city}`;
+                }
+                
+            } catch (error) {
+                console.error('Error loading profile data:', error);
+            }
+        }
+        
+        function populatePaymentData() {
+            // Calculate totals
+            const totalInvoiced = mockInvoices.reduce((sum, inv) => sum + inv.amount, 0);
+            const outstanding = mockInvoices.filter(inv => inv.status === 'unpaid').reduce((sum, inv) => sum + inv.amount, 0);
+            const overdue = mockInvoices.filter(inv => inv.status === 'overdue').reduce((sum, inv) => sum + inv.amount, 0);
+            const totalReceived = totalInvoiced - outstanding; // Calculate received from invoiced minus outstanding
+            
+            // Update summary cards
+            document.getElementById('totalInvoiced').textContent = `$${totalInvoiced.toLocaleString()}`;
+            document.getElementById('outstandingAmount').textContent = `$${outstanding.toLocaleString()}`;
+            document.getElementById('overdueAmount').textContent = `$${overdue.toLocaleString()}`;
+            document.getElementById('netBalance').textContent = `$${(totalReceived - outstanding).toLocaleString()}`;
+            document.getElementById('ytdEarnings').textContent = `$${totalReceived.toLocaleString()}`;
+            document.getElementById('projectedEarnings').textContent = `$${(totalReceived * 6).toLocaleString()}`;
+            
+            // Populate invoices table only
+            populateInvoicesTable();
+        }
+        
+        function populateInvoicesTable() {
+            const tbody = document.getElementById('invoicesTableBody');
+            tbody.innerHTML = mockInvoices.map(invoice => `
+                <tr>
+                    <td><span class="invoice-id">${invoice.id}</span></td>
+                    <td>${new Date(invoice.date).toLocaleDateString()}</td>
+                    <td>${invoice.description}</td>
+                    <td><span class="payment-amount">$${invoice.amount.toLocaleString()}</span></td>
+                    <td><span class="payment-status status-${invoice.status}">${invoice.status.toUpperCase()}</span></td>
+                    <td>
+                        <button class="btn btn-secondary" onclick="viewInvoice('${invoice.id}')">View</button>
+                        ${invoice.status === 'unpaid' ? '<button class="btn btn-primary" onclick="payInvoice(\'' + invoice.id + '\')">Pay</button>' : ''}
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        
+        function showTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.payment-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Show/hide tab panels
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                panel.style.display = 'none';
+            });
+            document.getElementById(`${tabName}-tab`).style.display = 'block';
+            
+            currentTab = tabName;
+        }
+        
+        function editProfile() {
+            window.location.href = 'edit-profile.html';
+        }
+        
+        function downloadStatement() {
+            utils.showNotification('Downloading payment statement...', 'success');
+            // In production, this would generate and download a PDF statement
+        }
+        
+        function viewInvoice(invoiceId) {
+            utils.showNotification(`Viewing invoice ${invoiceId}`, 'info');
+            // In production, this would open invoice details or PDF
+        }
+        
+        function payInvoice(invoiceId) {
+            utils.showNotification(`Redirecting to payment for ${invoiceId}`, 'info');
+            // In production, this would redirect to payment processor
+        }
+        
+        function openSupport() {
+            // Create support modal or redirect to support system
+            const supportOptions = [
+                'Email Support: support@sellersmedia.com',
+                'Live Chat: Available 24/7',
+                'Help Center: Online documentation',
+                'Phone Support: +1 (555) 123-HELP'
+            ];
+            
+            const message = 'Choose your preferred support option:\n\n' + 
+                          supportOptions.map((option, index) => `${index + 1}. ${option}`).join('\n') +
+                          '\n\nWe\'re here to help you succeed!';
+            
+            utils.showNotification('Support options displayed in console - check browser console', 'info');
+            console.log('=== SellersMedia Support Options ===');
+            console.log(message);
+            
+            // In production, this would open a support ticket system, live chat, or help center
+        }
+    </script>
+</body>
+</html>
